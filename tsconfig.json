@@ -34,6 +34,12 @@
       ],
       "types/*": [
         "src/types/*"
+      ],
+      "pages/*": [
+        "src/pages/*"
+      ],
+      "svgs/*": [
+        "src/svgs/*"
       ]
     },
     // "plugins": [{ "name": "typescript-plugin-css-modules" }],

@@ -3,3 +3,28 @@
   margin: 0;
   padding: 0;
 }
+
+.layout {
+  padding: 1rem;
+  width: 100vw;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  height: 100vh;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.centeredText {
+  display: grid;
+  justify-content: center;
+  text-align: center;
+}
