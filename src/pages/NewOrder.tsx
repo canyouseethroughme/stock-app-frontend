@@ -8,7 +8,7 @@ import {
   InputNumber,
 } from "antd";
 import { LeftOutlined, PlusOutlined, MinusOutlined } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 const { Footer, Content } = Layout;
@@ -20,16 +20,21 @@ export interface NewOrderProps {
   barName: string;
 }
 
-interface Order {
+export interface OrderProps {
   quantity: number;
   name: string;
+  measurementUnit: string;
 }
 
 const NewOrder: React.FC<NewOrderProps> = ({ barName }) => {
   const navigate = useNavigate();
-  const [order, setOrder] = useState<Order[]>([]);
+  const [order, setOrder] = useState<OrderProps[]>([]);
 
-  const getPanelValue = (reqQuantity: number, brandName: string) => {
+  const getPanelValue = (
+    reqQuantity: number,
+    brandName: string,
+    measurementUnit: string
+  ) => {
     const itemIndex = order.findIndex((o) => o.name === brandName);
     if (itemIndex >= 0) {
       setOrder((prevState) => {
@@ -37,16 +42,31 @@ const NewOrder: React.FC<NewOrderProps> = ({ barName }) => {
         newList[itemIndex] = {
           ...newList[itemIndex],
           quantity: reqQuantity,
+          measurementUnit,
         };
         return newList;
       });
     } else {
       setOrder((prevState) => [
         ...prevState,
-        { quantity: reqQuantity, name: brandName },
+        { quantity: reqQuantity, name: brandName, measurementUnit },
       ]);
     }
   };
+
+  const getInitialValue = (brandName: string): number => {
+    const item = order.find((i) => i.name === brandName);
+    if (item) {
+      return item.quantity;
+    }
+    return 0;
+  };
+
+  useEffect(() => {
+    const orderSession = sessionStorage["order"] ?? null;
+    const parsedOrder: OrderProps[] = JSON.parse(orderSession);
+    parsedOrder !== null && setOrder(parsedOrder);
+  }, []);
 
   return (
     <Layout className="layout">
@@ -55,7 +75,10 @@ const NewOrder: React.FC<NewOrderProps> = ({ barName }) => {
           <Button
             type="text"
             size="large"
-            onClick={() => navigate("/", { replace: true })}
+            onClick={() => {
+              sessionStorage.removeItem("order");
+              navigate("/", { replace: true });
+            }}
           >
             <LeftOutlined />
           </Button>
@@ -65,7 +88,8 @@ const NewOrder: React.FC<NewOrderProps> = ({ barName }) => {
         </div>
         <Divider />
         <Search placeholder="Search for a product" />
-        <div style={{ overflow: "scroll", paddingBottom: "6rem" }}>
+
+        <div style={{ overflowY: "scroll", paddingBottom: "6rem" }}>
           <Collapse defaultActiveKey={["1"]} style={{ marginTop: "1rem" }}>
             {data.map((item, index) => {
               return (
@@ -75,10 +99,15 @@ const NewOrder: React.FC<NewOrderProps> = ({ barName }) => {
                       <PanelItem
                         key={brand.name}
                         name={brand.name}
+                        initialValue={getInitialValue(brand.name)}
                         measurementUnit={brand.measurementUnit}
                         quantity={brand.quantity}
                         getValue={(reqQuantity) =>
-                          getPanelValue(reqQuantity, brand.name)
+                          getPanelValue(
+                            reqQuantity,
+                            brand.name,
+                            brand.measurementUnit
+                          )
                         }
                       />
                     );
@@ -104,11 +133,26 @@ const NewOrder: React.FC<NewOrderProps> = ({ barName }) => {
             danger
             size="large"
             style={{ marginRight: "1rem" }}
-            onClick={() => navigate("/", { replace: true })}
+            onClick={() => {
+              sessionStorage.removeItem("order");
+              navigate("/", { replace: true });
+            }}
           >
             Cancel
           </Button>
-          <Button size="large" type="primary" block disabled={!order.length}>
+          <Button
+            size="large"
+            type="primary"
+            block
+            disabled={!order.length}
+            onClick={() => {
+              sessionStorage.setItem(
+                "order",
+                JSON.stringify(order.filter((i) => i.quantity !== 0))
+              );
+              navigate("/confirming-order", { replace: true });
+            }}
+          >
             Next
           </Button>
         </div>
@@ -119,20 +163,39 @@ const NewOrder: React.FC<NewOrderProps> = ({ barName }) => {
 
 export default NewOrder;
 
+////////////////////////////////// TODO: Move to separate file //////////////////
+
 interface PanelItemProps {
   name: string;
   measurementUnit: string;
-  quantity: string;
+  quantity: number;
   getValue?: (value: number) => void;
+  initialValue?: number;
 }
 
-const PanelItem: React.FC<PanelItemProps> = ({
+export const PanelItem: React.FC<PanelItemProps> = ({
   name,
   measurementUnit,
   quantity,
   getValue,
+  initialValue,
 }) => {
-  const [value, setValue] = useState<number>(0);
+  const [value, setValue] = useState<number>(initialValue ?? 0);
+  const location = useLocation();
+
+  useEffect(() => {
+    setValue(initialValue || 0);
+  }, [initialValue]);
+
+  const minusOne = () => {
+    setValue(value - 1);
+    getValue && getValue(value - 1);
+  };
+
+  const plusOne = () => {
+    setValue(value + 1);
+    getValue && getValue(value + 1);
+  };
   return (
     <>
       <div
@@ -143,46 +206,52 @@ const PanelItem: React.FC<PanelItemProps> = ({
         }}
       >
         <div className="flex-column">
-          <Title level={5}>{name}</Title>
+          <Title level={4}>{name}</Title>
           <Paragraph style={{ color: "grey" }}>{measurementUnit}</Paragraph>
         </div>
-        <div className="flex-column">
-          <div className="flex-row">
-            <Button
-              type="text"
-              size="small"
-              disabled={value === 0}
-              onClick={() => {
-                setValue(value - 1);
-                getValue && getValue(value - 1);
-              }}
-            >
-              <MinusOutlined />
-            </Button>
+        {location.pathname === "/new-order" && (
+          <div className="flex-column">
+            <div className="flex-row">
+              <Button
+                type="text"
+                size="large"
+                disabled={value === 0}
+                onClick={minusOne}
+              >
+                <MinusOutlined style={{ fontSize: "1.2rem" }} />
+              </Button>
 
-            <InputNumber
-              value={value}
-              max={9}
-              min={0}
-              style={{ width: "2rem" }}
-            />
+              <InputNumber
+                value={value}
+                max={12}
+                min={0}
+                style={{
+                  width: "3rem",
+                  fontSize: "1.2rem",
+                  caretColor: "transparent",
+                }}
+                onKeyDown={(e) => e.preventDefault()}
+              />
 
-            <Button
-              type="text"
-              size="small"
-              disabled={value === 9}
-              onClick={() => {
-                setValue(value + 1);
-                getValue && getValue(value + 1);
-              }}
-            >
-              <PlusOutlined />
-            </Button>
+              <Button
+                type="text"
+                size="large"
+                disabled={value === 12}
+                onClick={plusOne}
+              >
+                <PlusOutlined style={{ fontSize: "1.2rem" }} />
+              </Button>
+            </div>
+            <Paragraph style={{ color: "grey", textAlign: "center" }}>
+              {quantity - value} left
+            </Paragraph>
           </div>
-          <Paragraph style={{ color: "grey", textAlign: "center" }}>
-            {quantity}
-          </Paragraph>
-        </div>
+        )}
+        {location.pathname === "/confirming-order" && (
+          <Title level={4} style={{ marginRight: "2rem" }}>
+            {initialValue}
+          </Title>
+        )}
       </div>
       <Divider style={{ margin: "0" }} />
     </>
@@ -196,17 +265,27 @@ const data = [
       {
         name: "Tuborg Green",
         measurementUnit: "Case of 24",
-        quantity: "330 left",
+        quantity: 330,
       },
       {
         name: "Tuborg Gold",
         measurementUnit: "Case of 24",
-        quantity: "30 left",
+        quantity: 30,
       },
       {
         name: "Skol",
         measurementUnit: "Case of 24",
-        quantity: "33 left",
+        quantity: 30,
+      },
+      {
+        name: "Carlsberg",
+        measurementUnit: "Case of 24",
+        quantity: 32,
+      },
+      {
+        name: "Bermas",
+        measurementUnit: "Case of 24",
+        quantity: 39,
       },
     ],
   },
@@ -216,17 +295,32 @@ const data = [
       {
         name: "Coca Cola",
         measurementUnit: "Case of 24",
-        quantity: "330 left",
+        quantity: 230,
       },
       {
         name: "Fanta Orange",
         measurementUnit: "Case of 24",
-        quantity: "320 left",
+        quantity: 23,
       },
       {
         name: "Fanta Dude",
         measurementUnit: "Case of 24",
-        quantity: "133 left",
+        quantity: 234,
+      },
+    ],
+  },
+  {
+    category: "water",
+    brands: [
+      {
+        name: "Still water",
+        measurementUnit: "Case of 24",
+        quantity: 230,
+      },
+      {
+        name: "Sparkling water",
+        measurementUnit: "Case of 24",
+        quantity: 23,
       },
     ],
   },

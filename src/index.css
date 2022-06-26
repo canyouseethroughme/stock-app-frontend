@@ -4,12 +4,21 @@
   padding: 0;
 }
 
+body {
+  background-color: #f0f0f0 !important;
+  min-height: 100vh;
+}
+
+.confirmTextarea {
+  resize: none;
+}
+
 .layout {
   padding: 1rem;
   width: 100vw;
   overflow-x: hidden;
   overflow-y: scroll;
-  height: 100vh;
+  min-height: 100vh;
 }
 
 .flex-row {
@@ -27,4 +36,11 @@
   display: grid;
   justify-content: center;
   text-align: center;
+}
+
+.centerDiv {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }

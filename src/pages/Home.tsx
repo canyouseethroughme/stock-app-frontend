@@ -1,19 +1,15 @@
-import { Layout, Tabs, Typography, Divider, Button } from "antd";
-import {
-  PlusOutlined,
-  BoxPlotOutlined,
-  DropboxOutlined,
-} from "@ant-design/icons";
+import { Layout, Tabs, Typography, Divider, Button, Badge, Card } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import { useMemo } from "react";
 
-const { Header, Footer, Sider, Content } = Layout;
+const { Footer, Content } = Layout;
 const { TabPane } = Tabs;
-const { Title, Paragraph, Text, Link } = Typography;
+const { Title, Paragraph } = Typography;
 
 export interface HomeProps {
   userName: string;
   userType: string;
-  // barType?: 'space' | 'vessel' | 'astral';
   barName?: string;
   data: any;
 }
@@ -22,7 +18,6 @@ const Home: React.FC<HomeProps> = ({
   userName,
   userType = "warehouse",
   barName,
-  data,
 }) => {
   const navigate = useNavigate();
   return (
@@ -39,6 +34,13 @@ const Home: React.FC<HomeProps> = ({
         <Divider />
         <Tabs defaultActiveKey="1">
           <TabPane tab="PENDING ORDERS" key="1">
+            <OrderCard
+              orderNo={1}
+              orderStatus="pending"
+              orderDescription=""
+              orderTime="10:41"
+              barName="Space Bar"
+            />
             <Title className="centeredText">No orders yet</Title>
           </TabPane>
           <TabPane tab="PAST ORDERS" key="2">
@@ -46,7 +48,15 @@ const Home: React.FC<HomeProps> = ({
           </TabPane>
         </Tabs>
       </Content>
-      <Footer>
+      <Footer
+        style={{
+          position: "fixed",
+          bottom: "0",
+          left: "0",
+          right: "0",
+          paddingBottom: "40px",
+        }}
+      >
         {userType === "manager" && (
           <Button
             type="primary"
@@ -66,3 +76,42 @@ const Home: React.FC<HomeProps> = ({
 };
 
 export default Home;
+
+////////////////////////////////// TODO: Move to separate file //////////////////
+
+interface OrderCardProps {
+  orderNo: number;
+  orderTime: string;
+  orderStatus: "pending" | "accepted" | "packed" | "delivering" | "delivered";
+  barName: string;
+  orderDescription?: string;
+}
+
+export const OrderCard: React.FC<OrderCardProps> = ({
+  orderNo,
+  orderStatus,
+  orderTime,
+  orderDescription,
+  barName,
+}) => {
+  const color = useMemo(() => {
+    switch (orderStatus) {
+      case "pending":
+        return "#7D7D7D";
+      case "accepted" || "packed" || "delivering":
+        return "#006FBF";
+      case "delivered":
+        return "#00BF4D";
+    }
+  }, [orderStatus]);
+  return (
+    <Badge.Ribbon text={orderStatus} color={color}>
+      <Card title={`#${orderNo} ${orderTime}`} size="small">
+        <Title level={4}>{barName}</Title>
+        <Paragraph style={{ color: "grey" }}>
+          {orderDescription ? orderDescription : "No description"}
+        </Paragraph>
+      </Card>
+    </Badge.Ribbon>
+  );
+};
