@@ -13,7 +13,22 @@ export type GetStorageItemsReturn = {
   items: StorageItemType[];
 };
 
+export type StorageItemsByCategory = {
+  category: string;
+  brands: StorageItemType[]
+}
+
+export type GetStorageItemsByCategory = {
+  items:StorageItemsByCategory[]
+}
+
+
 export const getStorageItems = async () => {
   const data = axios.get<GetStorageItemsReturn>(`${API_URL}/storage`);
   return data;
 };
+
+export const getStorageItemsByCategory = async () => {
+  const data = axios.get<GetStorageItemsByCategory>(`${API_URL}/storage/by-category`)
+  return data;
+}

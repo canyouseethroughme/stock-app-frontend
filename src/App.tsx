@@ -22,6 +22,7 @@ const App: React.FC = () => {
     if (userData?.role === 'admin' && window.innerWidth >= 728) {
       navigate('/admin-panel');
     }
+
   }, [userData]);
 
   return (
