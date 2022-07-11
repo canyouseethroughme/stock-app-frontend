@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
-import { Layout, Input, Typography } from 'antd';
 import Home from './pages/Home';
 import NewOrder from './pages/NewOrder';
 import ConfirmingOrder from './pages/ConfirmingOrder';
@@ -8,9 +7,6 @@ import { Login } from './pages/Login';
 import UserContext, { UserType } from './contexts/UserContext';
 import { AdminPanel } from './pages/AdminPanel';
 import { QueryClient, QueryClientProvider } from 'react-query';
-
-const { Title } = Typography;
-const { Content } = Layout;
 
 const App: React.FC = () => {
   const [userData, setUserData] = useState<UserType>();
