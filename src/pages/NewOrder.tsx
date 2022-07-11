@@ -227,7 +227,7 @@ export const PanelItem: React.FC<PanelItemProps> = ({
               </Button>
 
               <InputNumber
-                value={value}
+                value={value }
                 max={12}
                 min={0}
                 style={{
@@ -252,7 +252,7 @@ export const PanelItem: React.FC<PanelItemProps> = ({
             </Paragraph>
           </div>
         )}
-        {location.pathname === "/confirming-order" && (
+        {(location.pathname === "/confirming-order"  || location.pathname.includes('/confirming-order')) && (
           <Title level={4} style={{ marginRight: "2rem" }}>
             {initialValue}
           </Title>

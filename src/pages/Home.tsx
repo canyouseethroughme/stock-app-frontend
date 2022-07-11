@@ -29,6 +29,15 @@ const Home: React.FC<HomeProps> = ({
   console.log(orders?.data.orders);
   const { userData } = useContext(UserContext);
 
+  const getOrderStatus = (order: GetOrdersReturn): "pending" | "accepted" | "packed" | "delivering" | "delivered" => {
+    if (order.confirmDeliveredOrderBarId && order.confirmDeliveredOrderDeliveryId) return "delivered"
+    if (order.confirmOrderPickupId) return "delivering"
+    if (order.confirmPackedOrderStorageId) return "packed"    
+    if (order.confirmedOrderStorageId) return "accepted"
+
+    return "pending"
+  }
+
   return (
     <Layout className="layout">
       <Content className="tabsContainer">
@@ -47,21 +56,10 @@ const Home: React.FC<HomeProps> = ({
             {
               orders?.data.orders.length ?
               orders?.data.orders.map((order: GetOrdersReturn, orderIndex: any) => {
-                const getOrderStatus = (): "pending" | "accepted" | "packed" | "delivering" | "delivered" => {
-                  if (order.confirmDeliveredOrderBarId && order.confirmDeliveredOrderDeliveryId) return "delivered"
-                  
-                  if (order.confirmOrderPickupId) return "delivering"
-                  
-                  if (order.confirmPackedOrderStorageId) return "packed"
-                  
-                  if (order.confirmedOrderStorageId) return "accepted"
-                  return "pending"
-                }
-                
                 return (<OrderCard
                   key={orderIndex}
-                  orderNo={order._id.slice(order._id.length - 6)}
-                  orderStatus={getOrderStatus()}
+                  orderNo={order._id}
+                  orderStatus={getOrderStatus(order)}
                   orderDescription={order.comment}
                   orderTime={order.createdAt}
                   barName={order.barName}
@@ -124,6 +122,8 @@ export const OrderCard: React.FC<OrderCardProps> = ({
   barName,
   userType
 }) => {
+  const navigate = useNavigate();
+
   const color = useMemo(() => {
     switch (orderStatus) {
       case "pending":
@@ -136,7 +136,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
   }, [orderStatus]);
   return (
     <Badge.Ribbon text={orderStatus} color={color}>
-      <Card title={`#${orderNo} ${orderTime}`} size="small">
+      <Card title={`#${orderNo.slice(orderNo.length - 6)} ${orderTime}`} size="small">
         <Title level={4}>{barName}</Title>
         <Paragraph style={{ color: "grey" }}>
           {orderDescription ? orderDescription : "No description"}
@@ -144,11 +144,16 @@ export const OrderCard: React.FC<OrderCardProps> = ({
         {userType === 'bar' ? <div style={{width: "100%"}}>
         <Button danger icon={<CloseOutlined />} style={{width: "35%"}} size="large">Cancel</Button>
         <Button icon={<EditOutlined/>} style={{width: "65%"}} size="large">Edit</Button>
-        </div> : <Button size="large" block>View order</Button>
+        </div> : <Button size="large" block onClick={() => {
+          if(userType === 'storage') {
+            return navigate(`/confirming-order/${orderNo}`)
+          }
+          
+        }}>View order</Button>
         }
       </Card>
     </Badge.Ribbon>
   );
 };
 
-// 'bar' | 'delivery' | 'storage' | 'admin';
+          

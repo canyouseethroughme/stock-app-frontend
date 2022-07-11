@@ -46,7 +46,8 @@ const App: React.FC = () => {
               path='/new-order'
               element={<NewOrder barName='Space Bar' />}
             />
-            <Route path='/confirming-order' element={<ConfirmingOrder />} />
+            <Route path='/confirming-order/' element={<ConfirmingOrder />} />
+            <Route path='/confirming-order/:orderId' element={<ConfirmingOrder />} />
           </Routes>
         </UserContext.Provider>
       </QueryClientProvider>

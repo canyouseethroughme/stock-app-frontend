@@ -1,10 +1,12 @@
 import { Layout, Typography, Input, Button } from "antd";
 import { LeftOutlined } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useState, useEffect, useContext } from "react";
 import { PanelItem } from "./NewOrder";
 import { postCreateOrder } from "../services/orders";
 import { useQueryClient } from "react-query";
+import { useGetOrders } from "src/hooks/useGetOrders";
+import UserContext from "src/contexts/UserContext";
 
 
 const { Footer, Content } = Layout;
@@ -23,16 +25,27 @@ const ConfirmingOrder: React.FC = () => {
   const [confirmingOrder, setConfirmingOrder] = useState<CreateOrderType[]>([]);
   const [comment, setComment] = useState<string>()
 
+  const { userData } = useContext(UserContext);
+  let { orderId } = useParams();
+
   const queryClient = useQueryClient();
-  
+  const {isLoading, data: orders} = useGetOrders()
+
   useEffect(() => {
+
     const orderSession = sessionStorage["order"] ?? null;
     const parsedOrder = JSON.parse(orderSession);
     parsedOrder !== null && setConfirmingOrder(parsedOrder);
-  }, []);
+
+    if(userData?.role === 'storage') {
+      const findOrderById = orders?.data.orders.find((order: any) => order._id === orderId)
+      return findOrderById && setConfirmingOrder(findOrderById?.orderedItems)
+      
+    }
+  }, [userData, orders, orderId])
 
 
-  console.log(confirmingOrder);
+  console.log('this is ',confirmingOrder);
   
   return (
     <Layout className="layout">
@@ -86,7 +99,10 @@ const ConfirmingOrder: React.FC = () => {
         }}
       >
         <div className="flex-row">
-          <Button
+          {userData?.role === 'bar' && 
+          (
+            <>
+            <Button
             danger
             size="large"
             style={{ marginRight: "1rem" }}
@@ -94,26 +110,36 @@ const ConfirmingOrder: React.FC = () => {
               sessionStorage.removeItem("order");
               navigate("/", { replace: true });
             }}
-          >
+            >
             Cancel
           </Button>
           <Button
-            size="large"
-            type="primary"
-            block
-            onClick={async() => {
-              await postCreateOrder({orderedItems: confirmingOrder, comment})
-              queryClient.refetchQueries('getOrdersReturn');
-              sessionStorage.removeItem("order");
-              navigate("/", { replace: true });
-            }}
+          size="large"
+          type="primary"
+          block
+          onClick={async() => {
+            await postCreateOrder({orderedItems: confirmingOrder, comment})
+            queryClient.refetchQueries('getOrdersReturn');
+            sessionStorage.removeItem("order");
+            navigate("/", { replace: true });
+          }}
           >
             Confirm order
           </Button>
+            </>
+          )
+          }
+
+          {userData?.role === 'storage' && (
+            <Button size="large" block type="primary" onClick={() => {
+
+            }}>Accept Order</Button>
+          )}
         </div>
       </Footer>
     </Layout>
   );
 };
+
 
 export default ConfirmingOrder;
