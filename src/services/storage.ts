@@ -15,13 +15,12 @@ export type GetStorageItemsReturn = {
 
 export type StorageItemsByCategory = {
   category: string;
-  brands: StorageItemType[]
-}
+  brands: StorageItemType[];
+};
 
 export type GetStorageItemsByCategory = {
-  items:StorageItemsByCategory[]
-}
-
+  items: StorageItemsByCategory[];
+};
 
 export const getStorageItems = async () => {
   const data = axios.get<GetStorageItemsReturn>(`${API_URL}/storage`);
@@ -29,6 +28,12 @@ export const getStorageItems = async () => {
 };
 
 export const getStorageItemsByCategory = async () => {
-  const data = axios.get<GetStorageItemsByCategory>(`${API_URL}/storage/by-category`)
+  const data = axios.get<GetStorageItemsByCategory>(
+    `${API_URL}/storage/by-category`
+  );
   return data;
-}
+};
+
+export const deleteStorageItem = async (itemId: string) => {
+  return await axios.delete(`${API_URL}/storage/${itemId}`);
+};
