@@ -8,7 +8,6 @@ export const useStorageProducts = (
   } = {}
 ) => {
   const { enabled, ...options } = queryOptions;
-  // const enabledOverwrite = enabled || enabled === undefined;
 
   const storageItemsQuery = useQuery('storageItems', getStorageItems);
 
@@ -21,7 +20,6 @@ export const useStorageProductsByCategory = (
   } = {}
 ) => {
   const { enabled, ...options} = queryOptions;
-  // const enabledOverwrite = enabled || enabled === undefined;
 
   const storageItemsQuery = useQuery('storageItemsByCategory', getStorageItemsByCategory);
   return storageItemsQuery

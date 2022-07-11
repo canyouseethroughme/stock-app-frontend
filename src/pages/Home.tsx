@@ -1,7 +1,11 @@
 import { Layout, Tabs, Typography, Divider, Button, Badge, Card } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { CloseOutlined, EditOutlined , PlusOutlined} from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import { useMemo } from "react";
+import { useContext, useEffect, useMemo } from "react";
+import { getOrders, GetOrdersReturn } from "../services/orders";
+import { useGetOrders } from "src/hooks/useGetOrders";
+import UserContext from "src/contexts/UserContext";
+
 
 const { Footer, Content } = Layout;
 const { TabPane } = Tabs;
@@ -20,6 +24,11 @@ const Home: React.FC<HomeProps> = ({
   barName,
 }) => {
   const navigate = useNavigate();
+
+  const {isLoading, data: orders} = useGetOrders()
+  console.log(orders?.data.orders);
+  const { userData } = useContext(UserContext);
+
   return (
     <Layout className="layout">
       <Content className="tabsContainer">
@@ -34,14 +43,33 @@ const Home: React.FC<HomeProps> = ({
         <Divider />
         <Tabs defaultActiveKey="1">
           <TabPane tab="PENDING ORDERS" key="1">
-            <OrderCard
-              orderNo={1}
-              orderStatus="pending"
-              orderDescription=""
-              orderTime="10:41"
-              barName="Space Bar"
-            />
-            {/* <Title className="centeredText">No orders yet</Title> */}
+
+            {
+              orders?.data.orders.length ?
+              orders?.data.orders.map((order: GetOrdersReturn, orderIndex: any) => {
+                const getOrderStatus = (): "pending" | "accepted" | "packed" | "delivering" | "delivered" => {
+                  if (order.confirmDeliveredOrderBarId && order.confirmDeliveredOrderDeliveryId) return "delivered"
+                  
+                  if (order.confirmOrderPickupId) return "delivering"
+                  
+                  if (order.confirmPackedOrderStorageId) return "packed"
+                  
+                  if (order.confirmedOrderStorageId) return "accepted"
+                  return "pending"
+                }
+                
+                return (<OrderCard
+                  key={orderIndex}
+                  orderNo={order._id.slice(order._id.length - 6)}
+                  orderStatus={getOrderStatus()}
+                  orderDescription={order.comment}
+                  orderTime={order.createdAt}
+                  barName={order.barName}
+                  userType={userData?.role}
+                  />)}) : 
+                  <Title className="centeredText">No orders yet</Title>
+                }
+                
           </TabPane>
           <TabPane tab="PAST ORDERS" key="2">
             Orders history
@@ -80,11 +108,12 @@ export default Home;
 ////////////////////////////////// TODO: Move to separate file //////////////////
 
 interface OrderCardProps {
-  orderNo: number;
+  orderNo: string;
   orderTime: string;
   orderStatus: "pending" | "accepted" | "packed" | "delivering" | "delivered";
   barName: string;
   orderDescription?: string;
+  userType?: string;
 }
 
 export const OrderCard: React.FC<OrderCardProps> = ({
@@ -93,6 +122,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
   orderTime,
   orderDescription,
   barName,
+  userType
 }) => {
   const color = useMemo(() => {
     switch (orderStatus) {
@@ -111,7 +141,14 @@ export const OrderCard: React.FC<OrderCardProps> = ({
         <Paragraph style={{ color: "grey" }}>
           {orderDescription ? orderDescription : "No description"}
         </Paragraph>
+        {userType === 'bar' ? <div style={{width: "100%"}}>
+        <Button danger icon={<CloseOutlined />} style={{width: "35%"}} size="large">Cancel</Button>
+        <Button icon={<EditOutlined/>} style={{width: "65%"}} size="large">Edit</Button>
+        </div> : <Button size="large" block>View order</Button>
+        }
       </Card>
     </Badge.Ribbon>
   );
 };
+
+// 'bar' | 'delivery' | 'storage' | 'admin';

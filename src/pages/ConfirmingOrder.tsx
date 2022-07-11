@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { PanelItem } from "./NewOrder";
 import { postCreateOrder } from "../services/orders";
+import { useQueryClient } from "react-query";
 
 
 const { Footer, Content } = Layout;
@@ -13,6 +14,7 @@ const { TextArea } = Input;
 export interface CreateOrderType {
   itemId: string;
   quantity: number
+  name: string;
   measurementUnit: string;
 }
 
@@ -21,15 +23,17 @@ const ConfirmingOrder: React.FC = () => {
   const [confirmingOrder, setConfirmingOrder] = useState<CreateOrderType[]>([]);
   const [comment, setComment] = useState<string>()
 
+  const queryClient = useQueryClient();
   
   useEffect(() => {
     const orderSession = sessionStorage["order"] ?? null;
     const parsedOrder = JSON.parse(orderSession);
     parsedOrder !== null && setConfirmingOrder(parsedOrder);
-
-
   }, []);
 
+
+  console.log(confirmingOrder);
+  
   return (
     <Layout className="layout">
       <Content>
@@ -50,7 +54,7 @@ const ConfirmingOrder: React.FC = () => {
             {confirmingOrder.map((item, index) => (
               <PanelItem
                 key={index + 1}
-                name={item.itemId}
+                name={item.name}
                 initialValue={item.quantity}
                 measurementUnit={item.measurementUnit}
                 quantity={0}
@@ -97,8 +101,9 @@ const ConfirmingOrder: React.FC = () => {
             size="large"
             type="primary"
             block
-            onClick={() => {
-              postCreateOrder({items: confirmingOrder, comment})
+            onClick={async() => {
+              await postCreateOrder({orderedItems: confirmingOrder, comment})
+              queryClient.refetchQueries('getOrdersReturn');
               sessionStorage.removeItem("order");
               navigate("/", { replace: true });
             }}
