@@ -1,71 +1,43 @@
-import React, { useRef } from "react";
-import { Routes, Route } from "react-router-dom";
-import { Layout, Input, Button, Typography } from "antd";
-import Home from "./pages/Home";
-import NewOrder from "./pages/NewOrder";
-import ConfirmingOrder from "./pages/ConfirmingOrder";
+import React, { useEffect, useState } from 'react';
+import { Routes, Route } from 'react-router-dom';
+import { Layout, Input, Typography } from 'antd';
+import Home from './pages/Home';
+import NewOrder from './pages/NewOrder';
+import ConfirmingOrder from './pages/ConfirmingOrder';
+import { Login } from './pages/Login';
+import UserContext, { UserType } from './contexts/UserContext';
 
 const { Title } = Typography;
 const { Content } = Layout;
 
 const App: React.FC = () => {
-  const loggedIn = true;
+  const [userData, setUserData] = useState<UserType>();
+
   return (
-    <div className="App">
-      <Routes>
-        <Route
-          path="/"
-          element={
-            loggedIn ? (
-              <Home
-                userName="Alin"
-                barName="Space Bar"
-                userType="manager"
-                data=""
-              />
-            ) : (
-              <Login />
-            )
-          }
-        />
-        <Route path="/new-order" element={<NewOrder barName="Space Bar" />} />
-        <Route path="/confirming-order" element={<ConfirmingOrder />} />
-      </Routes>
+    <div className='App'>
+      <UserContext.Provider value={{ userData, setUserData }}>
+        <Routes>
+          <Route
+            path='/'
+            element={
+              userData?.token ? (
+                <Home
+                  userName={userData?.username}
+                  barName={userData?.barName}
+                  userType={userData?.role}
+                  data=''
+                />
+              ) : (
+                <Login />
+              )
+            }
+          />
+          <Route path='/new-order' element={<NewOrder barName='Space Bar' />} />
+          <Route path='/confirming-order' element={<ConfirmingOrder />} />
+        </Routes>
+      </UserContext.Provider>
     </div>
   );
 };
 
 export default App;
-
-////////////////////////////////// TODO: Move to separate file //////////////////
-
-export const Login: React.FC = () => {
-  return (
-    <Layout className="layout">
-      <Content>
-        <div className="flex-column centerDiv">
-          <Title level={5}>WELCOME TO</Title>
-          <Title level={3} style={{ margin: "0 0 2rem 0" }}>
-            KUNE Festival Bar Stock App
-          </Title>
-
-          <Input
-            placeholder="username"
-            size="large"
-            style={{ marginBottom: "1rem" }}
-          />
-          <Input
-            placeholder="password"
-            type="password"
-            size="large"
-            style={{ marginBottom: "1rem" }}
-          />
-
-          <Button size="large" type="primary" block>
-            LOGIN
-          </Button>
-        </div>
-      </Content>
-    </Layout>
-  );
-};
