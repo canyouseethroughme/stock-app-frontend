@@ -2,23 +2,32 @@ import { Layout, Typography, Input, Button } from "antd";
 import { LeftOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { OrderProps } from "./NewOrder";
 import { PanelItem } from "./NewOrder";
+import { postCreateOrder } from "../services/orders";
+
 
 const { Footer, Content } = Layout;
 const { Title } = Typography;
 const { TextArea } = Input;
 
-export interface ConfirmingOrderProps {}
+export interface CreateOrderType {
+  itemId: string;
+  quantity: number
+  measurementUnit: string;
+}
 
-const ConfirmingOrder: React.FC<ConfirmingOrderProps> = () => {
+const ConfirmingOrder: React.FC = () => {
   const navigate = useNavigate();
-  const [confirmingOrder, setConfirmingOrder] = useState<OrderProps[]>([]);
+  const [confirmingOrder, setConfirmingOrder] = useState<CreateOrderType[]>([]);
+  const [comment, setComment] = useState<string>()
 
+  
   useEffect(() => {
     const orderSession = sessionStorage["order"] ?? null;
     const parsedOrder = JSON.parse(orderSession);
     parsedOrder !== null && setConfirmingOrder(parsedOrder);
+
+
   }, []);
 
   return (
@@ -41,7 +50,7 @@ const ConfirmingOrder: React.FC<ConfirmingOrderProps> = () => {
             {confirmingOrder.map((item, index) => (
               <PanelItem
                 key={index + 1}
-                name={item.name}
+                name={item.itemId}
                 initialValue={item.quantity}
                 measurementUnit={item.measurementUnit}
                 quantity={0}
@@ -57,7 +66,7 @@ const ConfirmingOrder: React.FC<ConfirmingOrderProps> = () => {
               maxLength={100}
               rows={4}
               className="confirmTextarea"
-              onChange={(e) => console.log(e.target.value)}
+              onChange={(e) => setComment(e.target.value)}
             />
           </div>
         </div>
@@ -89,6 +98,7 @@ const ConfirmingOrder: React.FC<ConfirmingOrderProps> = () => {
             type="primary"
             block
             onClick={() => {
+              postCreateOrder({items: confirmingOrder, comment})
               sessionStorage.removeItem("order");
               navigate("/", { replace: true });
             }}

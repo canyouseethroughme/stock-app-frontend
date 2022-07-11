@@ -16,7 +16,7 @@ export interface HomeProps {
 
 const Home: React.FC<HomeProps> = ({
   userName,
-  userType = "warehouse",
+  userType,
   barName,
 }) => {
   const navigate = useNavigate();
@@ -25,11 +25,11 @@ const Home: React.FC<HomeProps> = ({
       <Content className="tabsContainer">
         <div className="centeredText">
           <Title level={3}>Hej, {userName}!</Title>
-          {userType === "manager" && (
+          {userType === "bar" && (
             <Title level={4}>Bar Manager: {barName}</Title>
           )}
-          {userType === "warehouse" && <Title level={4}>Warehouse</Title>}
-          {userType === "supply" && <Title level={4}>Supply</Title>}
+          {userType === "storage" && <Title level={4}>Storage</Title>}
+          {userType === "delivery" && <Title level={4}>Delivery</Title>}
         </div>
         <Divider />
         <Tabs defaultActiveKey="1">
@@ -41,7 +41,7 @@ const Home: React.FC<HomeProps> = ({
               orderTime="10:41"
               barName="Space Bar"
             />
-            <Title className="centeredText">No orders yet</Title>
+            {/* <Title className="centeredText">No orders yet</Title> */}
           </TabPane>
           <TabPane tab="PAST ORDERS" key="2">
             Orders history
@@ -57,7 +57,7 @@ const Home: React.FC<HomeProps> = ({
           paddingBottom: "40px",
         }}
       >
-        {userType === "manager" && (
+        {userType === "bar" && (
           <Button
             type="primary"
             size="large"

@@ -10,6 +10,7 @@ import {
 import { LeftOutlined, PlusOutlined, MinusOutlined } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useStorageProductsByCategory } from 'src/hooks/useStorageItems';
 
 const { Footer, Content } = Layout;
 const { Title, Paragraph } = Typography;
@@ -26,9 +27,13 @@ export interface OrderProps {
   measurementUnit: string;
 }
 
+
 const NewOrder: React.FC<NewOrderProps> = ({ barName }) => {
   const navigate = useNavigate();
   const [order, setOrder] = useState<OrderProps[]>([]);
+
+  const { isLoading: isStorageProducstLoadin, data: storageItems } =
+  useStorageProductsByCategory({enabled: true});
 
   const getPanelValue = (
     reqQuantity: number,
@@ -91,7 +96,7 @@ const NewOrder: React.FC<NewOrderProps> = ({ barName }) => {
 
         <div style={{ overflowY: "scroll", paddingBottom: "6rem" }}>
           <Collapse defaultActiveKey={["1"]} style={{ marginTop: "1rem" }}>
-            {data.map((item, index) => {
+            {storageItems?.data.items.map((item, index) => {
               return (
                 <Panel header={item.category.toUpperCase()} key={index + 1}>
                   {item.brands.map((brand) => {
@@ -167,7 +172,7 @@ export default NewOrder;
 
 interface PanelItemProps {
   name: string;
-  measurementUnit: string;
+  measurementUnit?: string;
   quantity: number;
   getValue?: (value: number) => void;
   initialValue?: number;
