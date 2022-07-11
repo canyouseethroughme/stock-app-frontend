@@ -7,6 +7,7 @@ import ConfirmingOrder from './pages/ConfirmingOrder';
 import { Login } from './pages/Login';
 import UserContext, { UserType } from './contexts/UserContext';
 import { AdminPanel } from './pages/AdminPanel';
+import { QueryClient, QueryClientProvider } from 'react-query';
 
 const { Title } = Typography;
 const { Content } = Layout;
@@ -14,6 +15,8 @@ const { Content } = Layout;
 const App: React.FC = () => {
   const [userData, setUserData] = useState<UserType>();
   const navigate = useNavigate();
+
+  const queryClient = new QueryClient();
 
   useEffect(() => {
     if (userData?.role === 'admin' && window.innerWidth >= 728) {
@@ -23,28 +26,33 @@ const App: React.FC = () => {
 
   return (
     <div className='App'>
-      <UserContext.Provider value={{ userData, setUserData }}>
-        <Routes>
-          <Route
-            path='/'
-            element={
-              userData?.token ? (
-                <Home
-                  userName={userData?.username}
-                  barName={userData?.barName}
-                  userType={userData?.role}
-                  data=''
-                />
-              ) : (
-                <Login />
-              )
-            }
-          />
-          <Route path='/admin-panel' element={<AdminPanel />} />
-          <Route path='/new-order' element={<NewOrder barName='Space Bar' />} />
-          <Route path='/confirming-order' element={<ConfirmingOrder />} />
-        </Routes>
-      </UserContext.Provider>
+      <QueryClientProvider client={queryClient}>
+        <UserContext.Provider value={{ userData, setUserData }}>
+          <Routes>
+            <Route
+              path='/'
+              element={
+                userData?.token ? (
+                  <Home
+                    userName={userData?.username}
+                    barName={userData?.barName}
+                    userType={userData?.role}
+                    data=''
+                  />
+                ) : (
+                  <Login />
+                )
+              }
+            />
+            <Route path='/admin-panel' element={<AdminPanel />} />
+            <Route
+              path='/new-order'
+              element={<NewOrder barName='Space Bar' />}
+            />
+            <Route path='/confirming-order' element={<ConfirmingOrder />} />
+          </Routes>
+        </UserContext.Provider>
+      </QueryClientProvider>
     </div>
   );
 };

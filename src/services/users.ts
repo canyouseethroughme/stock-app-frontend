@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import { API_URL } from 'src/config/constatns';
+import { API_URL } from 'src/config/constants';
 
 type LoginType = {
   username: string;

@@ -1,6 +1,7 @@
 import { Button, Input, Layout, Typography } from 'antd';
 import Password from 'antd/lib/input/Password';
 import { Content } from 'antd/lib/layout/layout';
+import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 
 import React, { useContext, useState } from 'react';
@@ -30,7 +31,7 @@ export const Login: React.FC = () => {
         } = await login({ username, password });
 
         const decodedToken = jwtDecode<TokenType>(token);
-
+        axios.defaults.headers.common['Authorization'] = token;
         setUserData && setUserData({ ...decodedToken, token });
       } catch (err) {
         console.log('err on login => ', err);
