@@ -1,25 +1,39 @@
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { Divider, Modal, Space, Typography } from 'antd';
+import { Modal, Space, Typography, notification } from 'antd';
 import React, { useState } from 'react';
-import { StorageItemType } from 'services/storage';
+import { useQueryClient } from 'react-query';
+import { deleteStorageItem, StorageItemType } from '../services/storage';
 import { StorageItemForm } from './StorageItemForm';
 
 interface StorageListItemProps {
   item: StorageItemType;
 }
 
-const { Text } = Typography;
+const { Text, Title } = Typography;
 
 export const StorageListItem: React.FC<StorageListItemProps> = ({ item }) => {
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
 
-  const [name, setName] = useState<string>(item.name);
-  const [quantity, setQuantity] = useState<number>(item.quantity);
-  const [measurementUnit, setMeasurementUnit] = useState<string>(
-    item.measurementUnit
-  );
-  const [category, setCategory] = useState<string>(item.category);
+  const queryClient = useQueryClient();
+
+  const onDeleteItem = async () => {
+    try {
+      await deleteStorageItem(item._id);
+      notification.success({
+        message: 'Item deleted successfully',
+        placement: 'top'
+      });
+      queryClient.refetchQueries('storageItems');
+      setTimeout(() => setIsDeleteModalVisible(false), 400);
+    } catch (err) {
+      console.log('err delete item => ', err);
+      notification.error({
+        message: 'There was an error',
+        placement: 'top'
+      });
+    }
+  };
 
   const onEditClick = () => {
     setIsEditModalVisible(true);
@@ -29,15 +43,7 @@ export const StorageListItem: React.FC<StorageListItemProps> = ({ item }) => {
     setIsDeleteModalVisible(true);
   };
 
-  const onEditModalSave = () => {
-    setIsEditModalVisible(false);
-  };
-
-  const onDeleteModalOk = () => {
-    setIsDeleteModalVisible(false);
-  };
-
-  const onCancelEditModal = () => {
+  const closeEditModal = () => {
     setIsEditModalVisible(false);
   };
 
@@ -48,40 +54,52 @@ export const StorageListItem: React.FC<StorageListItemProps> = ({ item }) => {
   return (
     <div className='flex-row'>
       <Space size={20}>
-        <div className='flex-column'>
-          <Text>{item.name}</Text>
+        <div className='flex-column' style={{ width: 150 }}>
+          <Text>
+            {item.name} - <Text type='secondary'>{item.category}</Text>
+          </Text>
           <Text type='secondary'>Left: {item.quantity}</Text>
         </div>
-        <EditOutlined onClick={onEditClick} height={40} width={40} />
+        <EditOutlined
+          onClick={onEditClick}
+          height={40}
+          width={40}
+          style={{ fontSize: 20 }}
+        />
 
-        <DeleteOutlined onClick={onDeleteClick} height={40} width={40} />
+        <DeleteOutlined
+          onClick={onDeleteClick}
+          height={40}
+          width={40}
+          style={{ fontSize: 20 }}
+        />
       </Space>
 
       <Modal
         visible={isEditModalVisible}
-        // okText={'Save'}
-        // okType='primary'
-        // onOk={onEditModalSave}
-        // onCancel={onCancelEditModal}
-        // okButtonProps={{
-        //   disabled:
-        //     name === item.name ||
-        //     category === item.category ||
-        //     measurementUnit === item.measurementUnit ||
-        //     quantity === item.quantity
-        // }}
-
+        onCancel={closeEditModal}
+        onOk={closeEditModal}
         footer={false}
       >
-        <StorageItemForm item={item} />
+        <StorageItemForm
+          item={item}
+          onOk={closeEditModal}
+          onCancel={closeEditModal}
+        />
       </Modal>
+
       <Modal
         visible={isDeleteModalVisible}
         okText={'Delete'}
         okType='danger'
-        onOk={onDeleteModalOk}
+        onOk={onDeleteItem}
         onCancel={onCancelDeleteModal}
-      />
+      >
+        <Title level={4} type='danger'>
+          Are you sure you want to delete "{item.name}"?
+        </Title>
+        <Text>Stock left: {item.quantity}</Text>
+      </Modal>
     </div>
   );
 };
