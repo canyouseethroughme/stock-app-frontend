@@ -37,3 +37,34 @@ export const getStorageItemsByCategory = async () => {
 export const deleteStorageItem = async (itemId: string) => {
   return await axios.delete(`${API_URL}/storage/${itemId}`);
 };
+
+type CreateStorageItemType = {
+  item: Omit<StorageItemType, '_id'>;
+};
+
+export const createStorageItem = async ({ item }: CreateStorageItemType) => {
+  const data = axios.post<StorageItemType>(`${API_URL}/storage`, {
+    item: {
+      name: item.name,
+      category: item.category,
+      measurementUnit: item.measurementUnit,
+      quantity: item.quantity
+    }
+  });
+  return data;
+};
+
+type EditStorageItemType = Omit<StorageItemType, '_id'> & { itemId: string };
+
+export const editStorageItem = async ({
+  itemId,
+  name,
+  quantity,
+  measurementUnit,
+  category
+}: EditStorageItemType) => {
+  const data = axios.put<StorageItemType>(`${API_URL}/storage/${itemId}`, {
+    item: { name, quantity, measurementUnit, category }
+  });
+  return data;
+};

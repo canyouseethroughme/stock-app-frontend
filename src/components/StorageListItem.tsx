@@ -1,6 +1,5 @@
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { Modal, Space, Typography, notification } from 'antd';
-import { NotificationPlacement } from 'antd/lib/notification';
 import React, { useState } from 'react';
 import { useQueryClient } from 'react-query';
 import { deleteStorageItem, StorageItemType } from '../services/storage';
@@ -55,13 +54,25 @@ export const StorageListItem: React.FC<StorageListItemProps> = ({ item }) => {
   return (
     <div className='flex-row'>
       <Space size={20}>
-        <div className='flex-column'>
-          <Text>{item.name}</Text>
+        <div className='flex-column' style={{ width: 150 }}>
+          <Text>
+            {item.name} - <Text type='secondary'>{item.category}</Text>
+          </Text>
           <Text type='secondary'>Left: {item.quantity}</Text>
         </div>
-        <EditOutlined onClick={onEditClick} height={40} width={40} />
+        <EditOutlined
+          onClick={onEditClick}
+          height={40}
+          width={40}
+          style={{ fontSize: 20 }}
+        />
 
-        <DeleteOutlined onClick={onDeleteClick} height={40} width={40} />
+        <DeleteOutlined
+          onClick={onDeleteClick}
+          height={40}
+          width={40}
+          style={{ fontSize: 20 }}
+        />
       </Space>
 
       <Modal
@@ -70,8 +81,13 @@ export const StorageListItem: React.FC<StorageListItemProps> = ({ item }) => {
         onOk={closeEditModal}
         footer={false}
       >
-        <StorageItemForm item={item} />
+        <StorageItemForm
+          item={item}
+          onOk={closeEditModal}
+          onCancel={closeEditModal}
+        />
       </Modal>
+
       <Modal
         visible={isDeleteModalVisible}
         okText={'Delete'}
