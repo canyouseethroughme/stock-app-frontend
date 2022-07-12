@@ -11,7 +11,7 @@ import { LeftOutlined, PlusOutlined, MinusOutlined } from '@ant-design/icons';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useStorageProductsByCategory } from 'src/hooks/useStorageItems';
-import { PanelItem } from 'components/PanelItem';
+import { PanelItem } from '../components/PanelItem';
 
 const { Footer, Content } = Layout;
 const { Title } = Typography;
