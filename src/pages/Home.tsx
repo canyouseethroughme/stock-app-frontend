@@ -52,6 +52,32 @@ const Home: React.FC<HomeProps> = ({ userName, userType, barName }) => {
     }
   }, [userData?.role, orders]);
 
+  const pastOrders = useMemo(() => {
+    if (userData?.role === 'admin') {
+      return orders?.data?.orders?.filter(
+        item =>
+          item.confirmDeliveredOrderBarId ||
+          item.confirmDeliveredOrderDeliveryId
+      );
+    }
+
+    if (userData?.role === 'bar') {
+      return orders?.data?.orders?.filter(
+        item => item.confirmDeliveredOrderBarId
+      );
+    }
+
+    if (userData?.role === 'delivery') {
+      return orders?.data?.orders?.filter(
+        item => item.confirmDeliveredOrderDeliveryId
+      );
+    }
+
+    if (userData?.role === 'storage') {
+      return orders?.data?.orders?.filter(item => item.confirmOrderPickupId);
+    }
+  }, [userData?.role, orders]);
+
   return (
     <Layout className='layout'>
       <Content className='tabsContainer'>
@@ -85,7 +111,23 @@ const Home: React.FC<HomeProps> = ({ userName, userType, barName }) => {
             )}
           </TabPane>
           <TabPane tab='PAST ORDERS' key='2'>
-            Orders history
+            {pastOrders ? (
+              pastOrders.map((order: GetOrdersReturn, orderIndex: any) => {
+                return (
+                  <OrderCard
+                    key={orderIndex}
+                    orderNo={order._id}
+                    orderStatus={getOrderStatus(order)}
+                    orderDescription={order.comment}
+                    orderTime={order.createdAt}
+                    barName={order.barName}
+                    userType={userData?.role}
+                  />
+                );
+              })
+            ) : (
+              <Title className='centeredText'>No orders yet</Title>
+            )}
           </TabPane>
         </Tabs>
       </Content>
@@ -161,7 +203,6 @@ export const OrderCard: React.FC<OrderCardProps> = ({
     }
   }, [orderStatus]);
 
-  console.log('item -=. ', orderStatus);
   return (
     <Badge.Ribbon
       text={
