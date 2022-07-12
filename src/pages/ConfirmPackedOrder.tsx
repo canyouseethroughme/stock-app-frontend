@@ -23,10 +23,6 @@ export const ConfirmPackedOrder: React.FC<ConfirmPackedOrderProps> = ({}) => {
 
   useEffect(() => {
     if (orderData) {
-      console.log(
-        '🚀 ~ file: ConfirmOrderStorage.tsx ~ line 30 ~ useEffect ~ orderData',
-        orderData
-      );
       setConfirmingOrder(orderData?.data?.order?.orderedItems);
     }
   }, [orderData]);
