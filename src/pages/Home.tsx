@@ -73,22 +73,20 @@ const Home: React.FC<HomeProps> = ({ userName, userType, barName }) => {
         <Divider />
         <Tabs defaultActiveKey='1'>
           <TabPane tab='PENDING ORDERS' key='1'>
-            {orders?.data.orders.length ? (
-              orders?.data.orders.map(
-                (order: GetOrdersReturn, orderIndex: any) => {
-                  return (
-                    <OrderCard
-                      key={orderIndex}
-                      orderNo={order._id}
-                      orderStatus={getOrderStatus(order)}
-                      orderDescription={order.comment}
-                      orderTime={order.createdAt}
-                      barName={order.barName}
-                      userType={userData?.role}
-                    />
-                  );
-                }
-              )
+            {activeOrders ? (
+              activeOrders.map((order: GetOrdersReturn, orderIndex: any) => {
+                return (
+                  <OrderCard
+                    key={orderIndex}
+                    orderNo={order._id}
+                    orderStatus={getOrderStatus(order)}
+                    orderDescription={order.comment}
+                    orderTime={order.createdAt}
+                    barName={order.barName}
+                    userType={userData?.role}
+                  />
+                );
+              })
             ) : (
               <Title className='centeredText'>No orders yet</Title>
             )}
@@ -195,6 +193,10 @@ export const OrderCard: React.FC<OrderCardProps> = ({
             onClick={() => {
               if (userType === 'storage' && orderStatus === 'pending') {
                 return navigate(`/confirming-order-storage/${orderNo}`);
+              }
+
+              if (userType === 'storage' && orderStatus === 'accepted') {
+                return navigate(`/confirming-packed-order/${orderNo}`);
               }
             }}
           >

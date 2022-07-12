@@ -5,11 +5,11 @@ import {
   Input,
   Button,
   Collapse,
-  InputNumber,
-} from "antd";
-import { LeftOutlined, PlusOutlined, MinusOutlined } from "@ant-design/icons";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+  InputNumber
+} from 'antd';
+import { LeftOutlined, PlusOutlined, MinusOutlined } from '@ant-design/icons';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { useStorageProductsByCategory } from 'src/hooks/useStorageItems';
 
 const { Footer, Content } = Layout;
@@ -27,40 +27,39 @@ export interface OrderProps {
   measurementUnit: string;
 }
 
-
 const NewOrder: React.FC<NewOrderProps> = ({ barName }) => {
   const navigate = useNavigate();
   const [order, setOrder] = useState<OrderProps[]>([]);
 
   const { isLoading: isStorageProducstLoadin, data: storageItems } =
-  useStorageProductsByCategory({enabled: true});
+    useStorageProductsByCategory({ enabled: true });
 
   const getPanelValue = (
     reqQuantity: number,
     brandName: string,
     measurementUnit: string
   ) => {
-    const itemIndex = order.findIndex((o) => o.name === brandName);
+    const itemIndex = order.findIndex(o => o.name === brandName);
     if (itemIndex >= 0) {
-      setOrder((prevState) => {
+      setOrder(prevState => {
         const newList = [...prevState];
         newList[itemIndex] = {
           ...newList[itemIndex],
           quantity: reqQuantity,
-          measurementUnit,
+          measurementUnit
         };
         return newList;
       });
     } else {
-      setOrder((prevState) => [
+      setOrder(prevState => [
         ...prevState,
-        { quantity: reqQuantity, name: brandName, measurementUnit },
+        { quantity: reqQuantity, name: brandName, measurementUnit }
       ]);
     }
   };
 
   const getInitialValue = (brandName: string): number => {
-    const item = order.find((i) => i.name === brandName);
+    const item = order.find(i => i.name === brandName);
     if (item) {
       return item.quantity;
     }
@@ -68,46 +67,47 @@ const NewOrder: React.FC<NewOrderProps> = ({ barName }) => {
   };
 
   useEffect(() => {
-    const orderSession = sessionStorage["order"] ?? null;
+    const orderSession = sessionStorage['order'] ?? null;
     const parsedOrder: OrderProps[] = JSON.parse(orderSession);
     parsedOrder !== null && setOrder(parsedOrder);
   }, []);
 
   return (
-    <Layout className="layout">
+    <Layout className='layout'>
       <Content>
-        <div className="flex-row">
+        <div className='flex-row'>
           <Button
-            type="text"
-            size="large"
+            type='text'
+            size='large'
             onClick={() => {
-              sessionStorage.removeItem("order");
-              navigate("/", { replace: true });
+              sessionStorage.removeItem('order');
+              navigate('/', { replace: true });
             }}
           >
             <LeftOutlined />
           </Button>
-          <Title level={4} style={{ margin: "0" }}>
+          <Title level={4} style={{ margin: '0' }}>
             Creating order for: {barName}
           </Title>
         </div>
         <Divider />
-        <Search placeholder="Search for a product" />
+        <Search placeholder='Search for a product' />
 
-        <div style={{ overflowY: "scroll", paddingBottom: "6rem" }}>
-          <Collapse defaultActiveKey={["1"]} style={{ marginTop: "1rem" }}>
+        <div style={{ overflowY: 'scroll', paddingBottom: '6rem' }}>
+          <Collapse defaultActiveKey={['1']} style={{ marginTop: '1rem' }}>
             {storageItems?.data.items.map((item, index) => {
               return (
                 <Panel header={item.category.toUpperCase()} key={index + 1}>
-                  {item.brands.map((brand) => {
+                  {item.brands.map(brand => {
                     return (
                       <PanelItem
                         key={brand.name}
+                        moreThanInitial={true}
                         name={brand.name}
                         initialValue={getInitialValue(brand.name)}
                         measurementUnit={brand.measurementUnit}
                         quantity={brand.quantity}
-                        getValue={(reqQuantity) =>
+                        getValue={reqQuantity =>
                           getPanelValue(
                             reqQuantity,
                             brand.name,
@@ -126,36 +126,36 @@ const NewOrder: React.FC<NewOrderProps> = ({ barName }) => {
 
       <Footer
         style={{
-          position: "fixed",
-          bottom: "0",
-          left: "0",
-          right: "0",
-          paddingBottom: "40px",
+          position: 'fixed',
+          bottom: '0',
+          left: '0',
+          right: '0',
+          paddingBottom: '40px'
         }}
       >
-        <div className="flex-row">
+        <div className='flex-row'>
           <Button
             danger
-            size="large"
-            style={{ marginRight: "1rem" }}
+            size='large'
+            style={{ marginRight: '1rem' }}
             onClick={() => {
-              sessionStorage.removeItem("order");
-              navigate("/", { replace: true });
+              sessionStorage.removeItem('order');
+              navigate('/', { replace: true });
             }}
           >
             Cancel
           </Button>
           <Button
-            size="large"
-            type="primary"
+            size='large'
+            type='primary'
             block
             disabled={!order.length}
             onClick={() => {
               sessionStorage.setItem(
-                "order",
-                JSON.stringify(order.filter((i) => i.quantity !== 0))
+                'order',
+                JSON.stringify(order.filter(i => i.quantity !== 0))
               );
-              navigate("/confirming-order", { replace: true });
+              navigate('/confirming-order', { replace: true });
             }}
           >
             Next
@@ -176,6 +176,8 @@ interface PanelItemProps {
   quantity: number;
   getValue?: (value: number) => void;
   initialValue?: number;
+  enableEdit?: boolean;
+  moreThanInitial?: boolean;
 }
 
 export const PanelItem: React.FC<PanelItemProps> = ({
@@ -184,6 +186,8 @@ export const PanelItem: React.FC<PanelItemProps> = ({
   quantity,
   getValue,
   initialValue,
+  enableEdit = false,
+  moreThanInitial = false
 }) => {
   const [value, setValue] = useState<number>(initialValue ?? 0);
   const location = useLocation();
@@ -204,61 +208,66 @@ export const PanelItem: React.FC<PanelItemProps> = ({
   return (
     <>
       <div
-        className="flex-row"
+        className='flex-row'
         style={{
-          paddingTop: ".5rem",
-          justifyContent: "space-between",
+          paddingTop: '.5rem',
+          justifyContent: 'space-between'
         }}
       >
-        <div className="flex-column">
+        <div className='flex-column'>
           <Title level={4}>{name}</Title>
-          <Paragraph style={{ color: "grey" }}>{measurementUnit}</Paragraph>
+          <Paragraph style={{ color: 'grey' }}>{measurementUnit}</Paragraph>
         </div>
-        {location.pathname === "/new-order" && (
-          <div className="flex-column">
-            <div className="flex-row">
+        {enableEdit ? (
+          <div className='flex-column'>
+            <div className='flex-row'>
               <Button
-                type="text"
-                size="large"
+                type='text'
+                size='large'
                 disabled={value === 0}
                 onClick={minusOne}
               >
-                <MinusOutlined style={{ fontSize: "1.2rem" }} />
+                <MinusOutlined style={{ fontSize: '1.2rem' }} />
               </Button>
 
               <InputNumber
-                value={value }
+                value={value}
                 max={12}
                 min={0}
                 style={{
-                  width: "3rem",
-                  fontSize: "1.2rem",
-                  caretColor: "transparent",
+                  width: '3rem',
+                  fontSize: '1.2rem',
+                  caretColor: 'transparent'
                 }}
-                onKeyDown={(e) => e.preventDefault()}
+                onKeyDown={e => e.preventDefault()}
               />
-
+              {/* TODO: FIX DISABLED TO NOT WORK WITH MORE THAN THE ONES EXISTING IN STOCK */}
               <Button
-                type="text"
-                size="large"
-                disabled={value === 12}
+                type='text'
+                size='large'
+                disabled={!moreThanInitial && value === initialValue}
                 onClick={plusOne}
               >
-                <PlusOutlined style={{ fontSize: "1.2rem" }} />
+                <PlusOutlined style={{ fontSize: '1.2rem' }} />
               </Button>
             </div>
-            <Paragraph style={{ color: "grey", textAlign: "center" }}>
+            <Paragraph style={{ color: 'grey', textAlign: 'center' }}>
               {quantity - value} left
             </Paragraph>
           </div>
-        )}
-        {(location.pathname === "/confirming-order"  || location.pathname.includes('/confirming-order')) && (
-          <Title level={4} style={{ marginRight: "2rem" }}>
+        ) : (
+          <Title level={4} style={{ marginRight: '2rem' }}>
             {initialValue}
           </Title>
         )}
+        {/* {(location.pathname === '/confirming-order' ||
+          location.pathname.includes('/confirming-order')) && (
+          <Title level={4} style={{ marginRight: '2rem' }}>
+            {initialValue}
+          </Title>
+        )} */}
       </div>
-      <Divider style={{ margin: "0" }} />
+      <Divider style={{ margin: '0' }} />
     </>
   );
 };

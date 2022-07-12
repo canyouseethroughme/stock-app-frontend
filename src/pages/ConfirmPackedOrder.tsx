@@ -1,18 +1,17 @@
-import { LeftOutlined } from '@ant-design/icons';
 import { Button, Layout, Spin, Typography } from 'antd';
 import { Content, Footer } from 'antd/lib/layout/layout';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { confirmOrderStorage } from '../services/orders';
+import { confirmPackedOrder } from '../services/orders';
 import { useGetOrderById } from 'src/hooks/useGetOrderById';
 import { CreateOrderType } from './ConfirmingOrder';
 import { PanelItem } from './NewOrder';
 
-interface ConfirmOrderStorageProps {}
+interface ConfirmPackedOrderProps {}
 
 const { Title } = Typography;
 
-export const ConfirmOrderStorage: React.FC<ConfirmOrderStorageProps> = ({}) => {
+export const ConfirmPackedOrder: React.FC<ConfirmPackedOrderProps> = ({}) => {
   const navigate = useNavigate();
   let { orderId } = useParams();
 
@@ -32,16 +31,28 @@ export const ConfirmOrderStorage: React.FC<ConfirmOrderStorageProps> = ({}) => {
     }
   }, [orderData]);
 
-  const onConfirmOrder = async () => {
-    try {
-      const data = await confirmOrderStorage(orderId as string);
-      console.log(
-        '🚀 ~ file: ConfirmOrderStorage.tsx ~ line 39 ~ onConfirmOrder ~ data',
-        data
-      );
-      navigate('/');
-    } catch (err) {
-      console.log('err confirm order storage => ', err);
+  const getPanelValue = (
+    reqQuantity: number,
+    brandName: string,
+    measurementUnit: string,
+    itemId: string
+  ) => {
+    const itemIndex = confirmingOrder.findIndex(o => o.name === brandName);
+    if (itemIndex >= 0) {
+      setConfirmingOrder(prevState => {
+        const newList = [...prevState];
+        newList[itemIndex] = {
+          ...newList[itemIndex],
+          quantity: reqQuantity,
+          measurementUnit
+        };
+        return newList;
+      });
+    } else {
+      setConfirmingOrder(prevState => [
+        ...prevState,
+        { quantity: reqQuantity, name: brandName, measurementUnit, itemId }
+      ]);
     }
   };
 
@@ -52,6 +63,21 @@ export const ConfirmOrderStorage: React.FC<ConfirmOrderStorageProps> = ({}) => {
       </div>
     );
   }
+
+  const onConfirmPacked = async () => {
+    console.log('order items -> ', confirmingOrder);
+    if (confirmingOrder) {
+      try {
+        const data = await confirmPackedOrder(
+          orderId as string,
+          confirmingOrder
+        );
+        navigate('/');
+      } catch (err) {
+        console.log('err confirm packed order => ', err);
+      }
+    }
+  };
 
   return (
     <Layout className='layout'>
@@ -70,6 +96,15 @@ export const ConfirmOrderStorage: React.FC<ConfirmOrderStorageProps> = ({}) => {
                 initialValue={item.quantity}
                 measurementUnit={item.measurementUnit}
                 quantity={0}
+                enableEdit={true}
+                getValue={reqQuantity =>
+                  getPanelValue(
+                    reqQuantity,
+                    item.name,
+                    item.measurementUnit,
+                    item.itemId
+                  )
+                }
               />
             ))}
           </div>
@@ -80,10 +115,10 @@ export const ConfirmOrderStorage: React.FC<ConfirmOrderStorageProps> = ({}) => {
             size='large'
             block
             type='primary'
-            onClick={onConfirmOrder}
+            onClick={onConfirmPacked}
             disabled={!confirmingOrder}
           >
-            Accept Order
+            Confirm packed order
           </Button>
         </Footer>
       </Content>

@@ -70,4 +70,13 @@ export const confirmOrderStorage = async (id: string) => {
   const data = axios.put(`${API_URL}/orders/confirm-order-storage`, {
     orderId: id
   });
+  return data;
+};
+
+export const confirmPackedOrder = async (id: string, items: IOrderItem[]) => {
+  const data = await axios.put(`${API_URL}/orders/confirm-packed-order`, {
+    orderId: id,
+    confirmPackedOrderStorage: items
+  });
+  return data;
 };

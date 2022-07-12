@@ -12,5 +12,5 @@ export const useGetOrderById = (
     enabled?: boolean;
   } = {}
 ) => {
-  return useQuery('getOrderById', () => getOrderById(id));
+  return useQuery('getOrderById', () => getOrderById(id), { cacheTime: 0 });
 };
