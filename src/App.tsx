@@ -9,6 +9,7 @@ import { AdminPanel } from './pages/AdminPanel';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ConfirmOrderStorage } from './pages/ConfirmOrderStorage';
 import { ConfirmPackedOrder } from './pages/ConfirmPackedOrder';
+import { ConfirmPickedOrder } from './pages/ConfirmPickedOrder';
 
 const App: React.FC = () => {
   const [userData, setUserData] = useState<UserType>();
@@ -55,6 +56,10 @@ const App: React.FC = () => {
             <Route
               path='/confirming-packed-order/:orderId'
               element={<ConfirmPackedOrder />}
+            />
+            <Route
+              path='/confirming-picked-order/:orderId'
+              element={<ConfirmPickedOrder />}
             />
           </Routes>
         </UserContext.Provider>

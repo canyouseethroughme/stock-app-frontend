@@ -80,3 +80,11 @@ export const confirmPackedOrder = async (id: string, items: IOrderItem[]) => {
   });
   return data;
 };
+
+export const confirmPickedUp = async (id: string, items: IOrderItem[]) => {
+  const data = await axios.put(`${API_URL}/orders/confirm-pick-up`, {
+    orderId: id,
+    confirmOrderPickedUp: items
+  });
+  return data;
+};

@@ -198,6 +198,10 @@ export const OrderCard: React.FC<OrderCardProps> = ({
               if (userType === 'storage' && orderStatus === 'accepted') {
                 return navigate(`/confirming-packed-order/${orderNo}`);
               }
+
+              if (userType === 'delivery' && orderStatus === 'packed') {
+                return navigate(`/confirming-picked-order/${orderNo}`);
+              }
             }}
           >
             View order
