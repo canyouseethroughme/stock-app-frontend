@@ -1,16 +1,20 @@
 import { AxiosError } from 'axios';
 import { useQuery, UseQueryOptions } from 'react-query';
-import { getOrders, GetOrdersReturn } from '../services/orders';
+import {
+  getOrders,
+  GetOrdersReturn,
+  GetOrdersReturnType
+} from '../services/orders';
 
-const REFECTCH_INTERVAL = 10000
+const REFECTCH_INTERVAL = 10000;
 
 export const useGetOrders = (
-    queryOptions: UseQueryOptions<GetOrdersReturn, AxiosError> & {
+  queryOptions: UseQueryOptions<GetOrdersReturnType, AxiosError> & {
     enabled?: boolean;
-    } = {}
+  } = {}
 ) => {
-    const { enabled, ...options} = queryOptions;
+  const { enabled, ...options } = queryOptions;
 
-    const storageItemsQuery = useQuery('getOrdersReturn', getOrders);
-    return storageItemsQuery
-}
+  const storageItemsQuery = useQuery('getOrdersReturn', getOrders);
+  return storageItemsQuery;
+};
