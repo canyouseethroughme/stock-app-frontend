@@ -9,7 +9,7 @@ import {
 import UserContext from 'src/contexts/UserContext';
 import { useGetOrderById } from 'src/hooks/useGetOrderById';
 import { CreateOrderType } from './ConfirmingOrder';
-import { PanelItem } from './NewOrder';
+import { PanelItem } from '../components/PanelItem';
 
 const { Title } = Typography;
 

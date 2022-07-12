@@ -2,11 +2,12 @@ import { Layout, Typography, Input, Button } from 'antd';
 import { LeftOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect, useContext } from 'react';
-import { PanelItem } from './NewOrder';
+
 import { postCreateOrder } from '../services/orders';
 import { useQueryClient } from 'react-query';
 import { useGetOrders } from 'src/hooks/useGetOrders';
 import UserContext from 'src/contexts/UserContext';
+import { PanelItem } from '../components/PanelItem';
 
 const { Footer, Content } = Layout;
 const { Title } = Typography;

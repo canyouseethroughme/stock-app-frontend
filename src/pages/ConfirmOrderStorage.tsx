@@ -6,7 +6,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { confirmOrderStorage } from '../services/orders';
 import { useGetOrderById } from 'src/hooks/useGetOrderById';
 import { CreateOrderType } from './ConfirmingOrder';
-import { PanelItem } from './NewOrder';
+import { PanelItem } from '../components/PanelItem';
 
 interface ConfirmOrderStorageProps {}
 

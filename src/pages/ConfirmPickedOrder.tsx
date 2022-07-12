@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { confirmPickedUp } from '../services/orders';
 import { useGetOrderById } from 'src/hooks/useGetOrderById';
 import { CreateOrderType } from './ConfirmingOrder';
-import { PanelItem } from './NewOrder';
+import { PanelItem } from '../components/PanelItem';
 
 interface ConfirmPickedOrderProps {}
 
