@@ -5,6 +5,7 @@ import { useContext, useEffect, useMemo } from 'react';
 import { getOrders, GetOrdersReturn } from '../services/orders';
 import { useGetOrders } from 'src/hooks/useGetOrders';
 import UserContext from 'src/contexts/UserContext';
+import { getOrderStatus } from 'src/utils/getOrderStatus';
 
 const { Footer, Content } = Layout;
 const { TabPane } = Tabs;
@@ -26,31 +27,23 @@ const Home: React.FC<HomeProps> = ({ userName, userType, barName }) => {
 
   const { userData } = useContext(UserContext);
 
-  const getOrderStatus = (
-    order: GetOrdersReturn
-  ): 'pending' | 'accepted' | 'packed' | 'delivering' | 'delivered' => {
-    if (
-      order.confirmDeliveredOrderBarId &&
-      order.confirmDeliveredOrderDeliveryId
-    )
-      return 'delivered';
-    if (order.confirmOrderPickupId) return 'delivering';
-    if (order.confirmPackedOrderStorageId) return 'packed';
-    if (order.confirmedOrderStorageId) return 'accepted';
-
-    return 'pending';
-  };
-
   const activeOrders = useMemo(() => {
-    if (
-      userData?.role === 'admin' ||
-      userData?.role === 'delivery' ||
-      userData?.role === 'bar'
-    ) {
+    if (userData?.role === 'admin') {
       return orders?.data?.orders?.filter(
         item =>
-          !item.confirmDeliveredOrderBarId &&
+          !item.confirmDeliveredOrderBarId ||
           !item.confirmDeliveredOrderDeliveryId
+      );
+    }
+    if (userData?.role === 'bar') {
+      return orders?.data?.orders?.filter(
+        item => !item.confirmDeliveredOrderBarId
+      );
+    }
+
+    if (userData?.role === 'delivery') {
+      return orders?.data?.orders?.filter(
+        item => !item.confirmDeliveredOrderDeliveryId
       );
     }
 
@@ -130,7 +123,14 @@ export default Home;
 interface OrderCardProps {
   orderNo: string;
   orderTime: string;
-  orderStatus: 'pending' | 'accepted' | 'packed' | 'delivering' | 'delivered';
+  orderStatus:
+    | 'pending'
+    | 'accepted'
+    | 'packed'
+    | 'delivering'
+    | 'delivered-delivery'
+    | 'delivered-bar'
+    | 'delivered';
   barName: string;
   orderDescription?: string;
   userType?: string;
@@ -150,7 +150,11 @@ export const OrderCard: React.FC<OrderCardProps> = ({
     switch (orderStatus) {
       case 'pending':
         return '#7D7D7D';
-      case 'accepted' || 'packed' || 'delivering':
+      case 'accepted' ||
+        'packed' ||
+        'delivering' ||
+        'delivered-delivery' ||
+        'delivered-bar':
         return '#006FBF';
       case 'delivered':
         return '#00BF4D';
@@ -159,7 +163,14 @@ export const OrderCard: React.FC<OrderCardProps> = ({
 
   console.log('item -=. ', orderStatus);
   return (
-    <Badge.Ribbon text={orderStatus} color={color}>
+    <Badge.Ribbon
+      text={
+        orderStatus === 'delivered-bar' || orderStatus === 'delivered-delivery'
+          ? '1/2 delivered'
+          : orderStatus
+      }
+      color={color}
+    >
       <Card
         title={`#${orderNo.slice(orderNo.length - 6)} ${orderTime}`}
         size='small'
@@ -168,7 +179,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
         <Paragraph style={{ color: 'grey' }}>
           {orderDescription ? orderDescription : 'No description'}
         </Paragraph>
-        {userType === 'bar' ? (
+        {userType === 'bar' && orderStatus === 'pending' ? (
           <div style={{ width: '100%' }}>
             <Button
               danger
@@ -201,6 +212,17 @@ export const OrderCard: React.FC<OrderCardProps> = ({
 
               if (userType === 'delivery' && orderStatus === 'packed') {
                 return navigate(`/confirming-picked-order/${orderNo}`);
+              }
+
+              if (
+                (userType === 'bar' &&
+                  (orderStatus === 'delivering' ||
+                    orderStatus === 'delivered-delivery')) ||
+                (userType === 'delivery' &&
+                  (orderStatus === 'delivered-bar' ||
+                    orderStatus === 'delivering'))
+              ) {
+                return navigate(`/confirm-delivered/${orderNo}`);
               }
             }}
           >

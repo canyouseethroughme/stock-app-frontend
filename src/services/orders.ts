@@ -88,3 +88,26 @@ export const confirmPickedUp = async (id: string, items: IOrderItem[]) => {
   });
   return data;
 };
+
+export const confirmCompleteOrderBar = async (
+  id: string,
+  items: IOrderItem[]
+) => {
+  const data = await axios.put(`${API_URL}/orders/confirm-delivered-bar`, {
+    orderId: id,
+    confirmedItems: items
+  });
+
+  return data;
+};
+export const confirmCompleteOrderDelivery = async (
+  id: string,
+  items: IOrderItem[]
+) => {
+  const data = await axios.put(`${API_URL}/orders/confirm-delivery-delivery`, {
+    orderId: id,
+    confirmedItems: items
+  });
+
+  return data;
+};

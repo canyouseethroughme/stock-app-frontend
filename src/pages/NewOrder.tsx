@@ -104,6 +104,7 @@ const NewOrder: React.FC<NewOrderProps> = ({ barName }) => {
                         key={brand.name}
                         moreThanInitial={true}
                         name={brand.name}
+                        enableEdit={true}
                         initialValue={getInitialValue(brand.name)}
                         measurementUnit={brand.measurementUnit}
                         quantity={brand.quantity}

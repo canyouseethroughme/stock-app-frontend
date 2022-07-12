@@ -10,6 +10,7 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { ConfirmOrderStorage } from './pages/ConfirmOrderStorage';
 import { ConfirmPackedOrder } from './pages/ConfirmPackedOrder';
 import { ConfirmPickedOrder } from './pages/ConfirmPickedOrder';
+import { ConfirmDelivered } from './pages/ConfirmDelivered';
 
 const App: React.FC = () => {
   const [userData, setUserData] = useState<UserType>();
@@ -60,6 +61,10 @@ const App: React.FC = () => {
             <Route
               path='/confirming-picked-order/:orderId'
               element={<ConfirmPickedOrder />}
+            />
+            <Route
+              path='/confirm-delivered/:orderId'
+              element={<ConfirmDelivered />}
             />
           </Routes>
         </UserContext.Provider>
