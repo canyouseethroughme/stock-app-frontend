@@ -125,8 +125,12 @@ export const StorageItemForm: React.FC<StorageItemFormProps> = ({
         onChange={value => setMeasurementUnit(value)}
         value={measurementUnit}
       >
-        <Option value='bottle'>Bottle</Option>
-        <Option value='case'>Case</Option>
+        <Option value='Bottle'>Bottle</Option>
+        <Option value='Case of 30'>Case of 30</Option>
+        <Option value='Case of 24'>Case of 24</Option>
+        <Option value='Case of 20'>Case of 20</Option>
+        <Option value='Case of 18'>Case of 18</Option>
+        <Option value='Case'>Case</Option>
       </Select>
       <Text style={{ marginTop: 15, marginBottom: 5 }}>Category: </Text>
       <Select
@@ -135,9 +139,10 @@ export const StorageItemForm: React.FC<StorageItemFormProps> = ({
         style={{ width: '100%' }}
         onChange={value => setCategory(value)}
       >
-        <Option value='spirits'>Spirits</Option>
-        <Option value='beer'>Beer</Option>
-        <Option value='soda'>Soda</Option>
+        <Option value='Spirits'>Spirits</Option>
+        <Option value='Beer / Cider'>Beer / Cider</Option>
+        <Option value='Mixers'>Mixers</Option>
+        <Option value='Ready to drink'>Ready to drink</Option>
       </Select>
 
       <Divider />
