@@ -105,6 +105,7 @@ export const ConfirmDelivered: React.FC = ({}) => {
             {confirmingOrder?.map((item, index) => (
               <PanelItem
                 key={index + 1}
+                itemId={item.itemId}
                 name={item.name}
                 initialValue={item.quantity}
                 measurementUnit={item.measurementUnit}

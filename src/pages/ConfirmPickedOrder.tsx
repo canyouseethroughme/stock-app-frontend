@@ -84,6 +84,7 @@ export const ConfirmPickedOrder: React.FC<ConfirmPickedOrderProps> = ({}) => {
           <div style={{ marginTop: '1rem' }}>
             {confirmingOrder?.map((item, index) => (
               <PanelItem
+                itemId={item.itemId}
                 key={index + 1}
                 name={item.name}
                 initialValue={item.quantity}

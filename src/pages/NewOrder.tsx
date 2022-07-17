@@ -34,11 +34,13 @@ const NewOrder: React.FC<NewOrderProps> = ({ barName }) => {
 
   const { isLoading: isStorageProducstLoadin, data: storageItems } =
     useStorageProductsByCategory({ enabled: true });
+  console.log('🚀 ~ file: NewOrder.tsx ~ line 36 ~ storageItems', storageItems);
 
   const getPanelValue = (
     reqQuantity: number,
     brandName: string,
-    measurementUnit: string
+    measurementUnit: string,
+    itemId: string
   ) => {
     const itemIndex = order.findIndex(o => o.name === brandName);
     if (itemIndex >= 0) {
@@ -54,7 +56,7 @@ const NewOrder: React.FC<NewOrderProps> = ({ barName }) => {
     } else {
       setOrder(prevState => [
         ...prevState,
-        { quantity: reqQuantity, name: brandName, measurementUnit }
+        { quantity: reqQuantity, name: brandName, measurementUnit, itemId }
       ]);
     }
   };
@@ -103,6 +105,7 @@ const NewOrder: React.FC<NewOrderProps> = ({ barName }) => {
                     return (
                       <PanelItem
                         key={brand.name}
+                        itemId={brand._id}
                         moreThanInitial={true}
                         name={brand.name}
                         enableEdit={true}
@@ -113,7 +116,8 @@ const NewOrder: React.FC<NewOrderProps> = ({ barName }) => {
                           getPanelValue(
                             reqQuantity,
                             brand.name,
-                            brand.measurementUnit
+                            brand.measurementUnit,
+                            brand._id
                           )
                         }
                       />

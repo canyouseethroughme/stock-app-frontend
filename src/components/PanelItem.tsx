@@ -2,6 +2,7 @@ import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Divider, InputNumber, Typography } from 'antd';
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useStorageProducts } from 'src/hooks/useStorageItems';
 
 interface PanelItemProps {
   name: string;
@@ -11,6 +12,7 @@ interface PanelItemProps {
   initialValue?: number;
   enableEdit?: boolean;
   moreThanInitial?: boolean;
+  itemId: string;
 }
 
 const { Title, Paragraph } = Typography;
@@ -22,10 +24,26 @@ export const PanelItem: React.FC<PanelItemProps> = ({
   getValue,
   initialValue,
   enableEdit = false,
-  moreThanInitial = false
+  moreThanInitial = false,
+  itemId
 }) => {
   const [value, setValue] = useState<number>(initialValue ?? 0);
+  const [totalNoOfItems, setTotalNoOfItems] = useState<number>(0);
+
+  const { isLoading: isStorageProductsLoading, data: storageItems } =
+    useStorageProducts({ enabled: false });
   const location = useLocation();
+
+  useEffect(() => {
+    if (storageItems) {
+      const foundIndex = storageItems.data.items.findIndex(
+        el => el._id === itemId
+      );
+      if (foundIndex >= 0) {
+        setTotalNoOfItems(storageItems.data.items[foundIndex].quantity);
+      }
+    }
+  }, [storageItems]);
 
   useEffect(() => {
     setValue(initialValue || 0);
@@ -51,7 +69,9 @@ export const PanelItem: React.FC<PanelItemProps> = ({
       >
         <div className='flex-column'>
           <Title level={4}>{name}</Title>
-          <Paragraph style={{ color: 'grey' }}>{measurementUnit}</Paragraph>
+          <Paragraph style={{ color: 'grey' }}>
+            Left: {totalNoOfItems} {measurementUnit}
+          </Paragraph>
         </div>
         {enableEdit ? (
           <div className='flex-column'>
