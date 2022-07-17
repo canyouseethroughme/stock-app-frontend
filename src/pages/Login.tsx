@@ -32,7 +32,10 @@ export const Login: React.FC = () => {
         const decodedToken = jwtDecode<TokenType>(token);
         axios.defaults.headers.common['Authorization'] = token;
         setUserData && setUserData({ ...decodedToken, token });
-        sessionStorage.setItem("userData", JSON.stringify({...decodedToken, token}))
+        sessionStorage.setItem(
+          'userData',
+          JSON.stringify({ ...decodedToken, token })
+        );
       } catch (err) {
         console.log('err on login => ', err);
       }

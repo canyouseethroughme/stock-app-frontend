@@ -11,6 +11,7 @@ import { ConfirmOrderStorage } from './pages/ConfirmOrderStorage';
 import { ConfirmPackedOrder } from './pages/ConfirmPackedOrder';
 import { ConfirmPickedOrder } from './pages/ConfirmPickedOrder';
 import { ConfirmDelivered } from './pages/ConfirmDelivered';
+import { ViewOrder } from './pages/ViewOrder';
 
 const App: React.FC = () => {
   const [userData, setUserData] = useState<UserType>();
@@ -23,6 +24,16 @@ const App: React.FC = () => {
       navigate('/admin-panel');
     }
   }, [userData]);
+
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     const sessionData = sessionStorage.getItem('userData');
+
+  //     if (sessionData) {
+  //       setUserData(JSON.parse(sessionData));
+  //     }
+  //   }, 400);
+  // }, []);
 
   return (
     <div className='App'>
@@ -66,6 +77,7 @@ const App: React.FC = () => {
               path='/confirm-delivered/:orderId'
               element={<ConfirmDelivered />}
             />
+            <Route path='/view-order/:orderId' element={<ViewOrder />} />
           </Routes>
         </UserContext.Provider>
       </QueryClientProvider>

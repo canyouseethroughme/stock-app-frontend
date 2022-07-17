@@ -1,19 +1,18 @@
-import { LeftOutlined } from '@ant-design/icons';
 import { Button, Layout, Spin, Typography } from 'antd';
 import { Content, Footer } from 'antd/lib/layout/layout';
+import { PanelItem } from '../components/PanelItem';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { confirmOrderStorage } from '../services/orders';
 import { useGetOrderById } from 'src/hooks/useGetOrderById';
 import { CreateOrderType } from './ConfirmingOrder';
-import { PanelItem } from '../components/PanelItem';
-
-interface ConfirmOrderStorageProps {}
 
 const { Title } = Typography;
 
-export const ConfirmOrderStorage: React.FC<ConfirmOrderStorageProps> = ({}) => {
+interface ViewOrderProps {}
+
+export const ViewOrder: React.FC<ViewOrderProps> = ({}) => {
   const navigate = useNavigate();
+
   let { orderId } = useParams();
 
   const [confirmingOrder, setConfirmingOrder] = useState<CreateOrderType[]>([]);
@@ -27,19 +26,6 @@ export const ConfirmOrderStorage: React.FC<ConfirmOrderStorageProps> = ({}) => {
       setConfirmingOrder(orderData?.data?.order?.orderedItems);
     }
   }, [orderData]);
-
-  const onConfirmOrder = async () => {
-    try {
-      const data = await confirmOrderStorage(orderId as string);
-      console.log(
-        '🚀 ~ file: ConfirmOrderStorage.tsx ~ line 39 ~ onConfirmOrder ~ data',
-        data
-      );
-      navigate('/');
-    } catch (err) {
-      console.log('err confirm order storage => ', err);
-    }
-  };
 
   if (isLoading) {
     return (
@@ -76,10 +62,10 @@ export const ConfirmOrderStorage: React.FC<ConfirmOrderStorageProps> = ({}) => {
             size='large'
             block
             type='primary'
-            onClick={onConfirmOrder}
+            onClick={() => navigate('/')}
             disabled={!confirmingOrder}
           >
-            Accept Order
+            Go Back
           </Button>
         </Footer>
       </Content>

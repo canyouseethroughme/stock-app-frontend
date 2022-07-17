@@ -265,6 +265,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
               ) {
                 return navigate(`/confirm-delivered/${orderNo}`);
               }
+              return navigate(`/view-order/${orderNo}`);
             }}
           >
             View order
