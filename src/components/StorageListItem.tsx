@@ -58,7 +58,9 @@ export const StorageListItem: React.FC<StorageListItemProps> = ({ item }) => {
           <Text>
             {item.name} - <Text type='secondary'>{item.category}</Text>
           </Text>
-          <Text type='secondary'>Left: {item.quantity}</Text>
+          <Text type='secondary'>
+            Left: {item.quantity} {item.measurementUnit}
+          </Text>
         </div>
         <EditOutlined
           onClick={onEditClick}
