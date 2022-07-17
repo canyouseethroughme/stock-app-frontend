@@ -1,11 +1,11 @@
-import { Button, Layout, Spin, Typography } from 'antd';
-import { Content, Footer } from 'antd/lib/layout/layout';
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { confirmPickedUp } from '../services/orders';
-import { useGetOrderById } from 'src/hooks/useGetOrderById';
-import { CreateOrderType } from './ConfirmingOrder';
-import { PanelItem } from '../components/PanelItem';
+import { Button, Layout, Spin, Typography } from "antd";
+import { Content, Footer } from "antd/lib/layout/layout";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { confirmPickedUp } from "../services/orders";
+import { useGetOrderById } from "src/hooks/useGetOrderById";
+import { CreateOrderType } from "./ConfirmingOrder";
+import { PanelItem } from "../components/PanelItem";
 
 interface ConfirmPickedOrderProps {}
 
@@ -18,14 +18,21 @@ export const ConfirmPickedOrder: React.FC<ConfirmPickedOrderProps> = ({}) => {
   const [confirmingOrder, setConfirmingOrder] = useState<CreateOrderType[]>([]);
 
   const { data: orderData, isLoading } = useGetOrderById({
-    id: orderId as string
+    id: orderId as string,
   });
 
   useEffect(() => {
-    if (orderData) {
-      setConfirmingOrder(orderData?.data?.order?.orderedItems);
+    if (orderData?.data?.order?.confirmPackedOrderStorage) {
+      setConfirmingOrder(orderData?.data?.order?.confirmPackedOrderStorage);
     }
   }, [orderData]);
+
+  const getFirstInitialValue = (id: string): number | undefined => {
+    const orderValue = orderData?.data.order.orderedItems.find(
+      (i) => i.itemId === id
+    );
+    return orderValue?.quantity;
+  };
 
   const getPanelValue = (
     reqQuantity: number,
@@ -33,65 +40,66 @@ export const ConfirmPickedOrder: React.FC<ConfirmPickedOrderProps> = ({}) => {
     measurementUnit: string,
     itemId: string
   ) => {
-    const itemIndex = confirmingOrder.findIndex(o => o.name === brandName);
+    const itemIndex = confirmingOrder.findIndex((o) => o.name === brandName);
     if (itemIndex >= 0) {
-      setConfirmingOrder(prevState => {
+      setConfirmingOrder((prevState) => {
         const newList = [...prevState];
         newList[itemIndex] = {
           ...newList[itemIndex],
           quantity: reqQuantity,
-          measurementUnit
+          measurementUnit,
         };
         return newList;
       });
     } else {
-      setConfirmingOrder(prevState => [
+      setConfirmingOrder((prevState) => [
         ...prevState,
-        { quantity: reqQuantity, name: brandName, measurementUnit, itemId }
+        { quantity: reqQuantity, name: brandName, measurementUnit, itemId },
       ]);
     }
   };
 
   const onConfirmPickedUp = async () => {
-    console.log('order items -> ', confirmingOrder);
+    console.log("order items -> ", confirmingOrder);
     if (confirmingOrder) {
       try {
         const data = await confirmPickedUp(orderId as string, confirmingOrder);
-        navigate('/');
+        navigate("/");
       } catch (err) {
-        console.log('err confirm packed order => ', err);
+        console.log("err confirm packed order => ", err);
       }
     }
   };
 
   if (isLoading) {
     return (
-      <div className='centerDiv'>
-        <Spin size='large' />
+      <div className="centerDiv">
+        <Spin size="large" />
       </div>
     );
   }
 
   return (
-    <Layout className='layout'>
+    <Layout className="layout">
       <Content>
-        <div className='flex-column' style={{ paddingBottom: '7rem' }}>
-          <div className='flex-row'>
-            <Title level={4} style={{ margin: '0' }}>
+        <div className="flex-column" style={{ paddingBottom: "7rem" }}>
+          <div className="flex-row">
+            <Title level={4} style={{ margin: "0" }}>
               Order summary
             </Title>
           </div>
-          <div style={{ marginTop: '1rem' }}>
+          <div style={{ marginTop: "1rem" }}>
             {confirmingOrder?.map((item, index) => (
               <PanelItem
                 itemId={item.itemId}
                 key={index + 1}
                 name={item.name}
                 initialValue={item.quantity}
+                firstInitialValue={getFirstInitialValue(item.itemId)}
                 measurementUnit={item.measurementUnit}
                 quantity={0}
                 enableEdit={true}
-                getValue={reqQuantity =>
+                getValue={(reqQuantity) =>
                   getPanelValue(
                     reqQuantity,
                     item.name,
@@ -105,9 +113,9 @@ export const ConfirmPickedOrder: React.FC<ConfirmPickedOrderProps> = ({}) => {
         </div>
         <Footer>
           <Button
-            size='large'
+            size="large"
             block
-            type='primary'
+            type="primary"
             onClick={onConfirmPickedUp}
             disabled={!confirmingOrder}
           >

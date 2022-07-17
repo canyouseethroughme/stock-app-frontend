@@ -97,6 +97,7 @@ const Home: React.FC<HomeProps> = ({ userName, userType, barName }) => {
             onClick={() => {
               axios.defaults.headers.common["Authorization"] = "";
               localStorage.clear();
+              sessionStorage.clear();
               window.location.reload();
             }}
           >
@@ -204,8 +205,6 @@ export const OrderCard: React.FC<OrderCardProps> = ({
   const queryClient = useQueryClient();
 
   const date = format(new Date(orderTime), "dd-LL-Y / H:m");
-
-  console.log("🚀 ~ file: Home.tsx ~ line 208 ~ date", date);
 
   const color = useMemo(() => {
     switch (orderStatus) {
