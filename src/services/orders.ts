@@ -118,11 +118,10 @@ export const deleteOrder = async (orderId: string) => {
   return data
 }
 
-// Alin DK, [17 Jul 2022 at 16.31.50]:
-// /orders/edit-order
-
-// put
-
-// body => orderedItems, comment, orderId
-
-// export const editOrder = asunc ()
+export const editOrder = async (orderId: string,
+  orderedItems: IOrderItem[], comment?: string) => {
+    const data = await axios.put(`${API_URL}/orders/edit-order`, {
+      orderedItems, comment, orderId
+    })
+    return data
+  }

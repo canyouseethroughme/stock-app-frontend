@@ -12,7 +12,7 @@ import { ConfirmPackedOrder } from "./pages/ConfirmPackedOrder";
 import { ConfirmPickedOrder } from "./pages/ConfirmPickedOrder";
 import { ConfirmDelivered } from "./pages/ConfirmDelivered";
 import { ViewOrder } from "./pages/ViewOrder";
-import EditOrder from "pages/EditOrder";
+import EditOrder from "./pages/EditOrder";
 
 const App: React.FC = () => {
   const [userData, setUserData] = useState<UserType>();
@@ -79,7 +79,10 @@ const App: React.FC = () => {
               element={<ConfirmDelivered />}
             />
             <Route path="/view-order/:orderId" element={<ViewOrder />} />
-            {/* <Route path="/edit-order/:orderId" element={<EditOrder barName={userData?.barName}/>}/> */}
+            <Route
+              path="/edit-order/:orderId"
+              element={<EditOrder barName={userData?.barName} />}
+            />
           </Routes>
         </UserContext.Provider>
       </QueryClientProvider>

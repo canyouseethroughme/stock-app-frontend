@@ -6,6 +6,7 @@ import { deleteOrder, getOrders, GetOrdersReturn } from "../services/orders";
 import { useGetOrders } from "src/hooks/useGetOrders";
 import UserContext from "src/contexts/UserContext";
 import { getOrderStatus } from "src/utils/getOrderStatus";
+import { useQueryClient } from "react-query";
 
 const { Footer, Content } = Layout;
 const { TabPane } = Tabs;
@@ -187,6 +188,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
   userType,
 }) => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const color = useMemo(() => {
     switch (orderStatus) {
@@ -227,7 +229,10 @@ export const OrderCard: React.FC<OrderCardProps> = ({
               icon={<CloseOutlined />}
               style={{ width: "35%" }}
               size="large"
-              onClick={() => deleteOrder(orderNo)}
+              onClick={() => {
+                deleteOrder(orderNo);
+                queryClient.refetchQueries("getOrdersReturn");
+              }}
             >
               Cancel
             </Button>
@@ -235,7 +240,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
               icon={<EditOutlined />}
               style={{ width: "65%" }}
               size="large"
-              onClick={() => navigate("/edit-order")}
+              onClick={() => navigate(`/edit-order/${orderNo}`)}
             >
               Edit
             </Button>
