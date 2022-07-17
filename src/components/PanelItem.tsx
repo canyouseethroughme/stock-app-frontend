@@ -1,6 +1,6 @@
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Divider, InputNumber, Typography } from 'antd';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useStorageProducts } from 'src/hooks/useStorageItems';
 
@@ -28,6 +28,7 @@ export const PanelItem: React.FC<PanelItemProps> = ({
   itemId
 }) => {
   const [value, setValue] = useState<number>(initialValue ?? 0);
+  const [firstValue, setFirstValue] = useState<number>(initialValue || 0);
   const [totalNoOfItems, setTotalNoOfItems] = useState<number>(0);
 
   const { isLoading: isStorageProductsLoading, data: storageItems } =
@@ -50,14 +51,20 @@ export const PanelItem: React.FC<PanelItemProps> = ({
   }, [initialValue]);
 
   const minusOne = () => {
-    setValue(value - 1);
+    setValue(prevState => prevState - 1);
     getValue && getValue(value - 1);
   };
 
   const plusOne = () => {
-    setValue(value + 1);
+    setValue(prevState => prevState + 1);
     getValue && getValue(value + 1);
   };
+
+  const leftItems = useMemo(
+    () => totalNoOfItems + (firstValue || 0) - value,
+    [value, totalNoOfItems, firstValue]
+  );
+
   return (
     <>
       <div
@@ -69,12 +76,15 @@ export const PanelItem: React.FC<PanelItemProps> = ({
       >
         <div className='flex-column'>
           <Title level={4}>{name}</Title>
-          <Paragraph style={{ color: 'grey' }}>
-            Left: {totalNoOfItems} {measurementUnit}
-          </Paragraph>
+          <Paragraph style={{ color: 'grey' }}>{measurementUnit}</Paragraph>
         </div>
         {enableEdit ? (
           <div className='flex-column'>
+            {(initialValue !== firstValue || firstValue) && (
+              <Paragraph style={{ color: 'grey', textAlign: 'center' }}>
+                Initially ordered: {firstValue}
+              </Paragraph>
+            )}
             <div className='flex-row'>
               <Button
                 type='text'
@@ -100,14 +110,14 @@ export const PanelItem: React.FC<PanelItemProps> = ({
               <Button
                 type='text'
                 size='large'
-                disabled={!moreThanInitial && value === initialValue}
+                disabled={!moreThanInitial && value === firstValue}
                 onClick={plusOne}
               >
                 <PlusOutlined style={{ fontSize: '1.2rem' }} />
               </Button>
             </div>
             <Paragraph style={{ color: 'grey', textAlign: 'center' }}>
-              {quantity - value} left
+              {leftItems} left
             </Paragraph>
           </div>
         ) : (
@@ -115,12 +125,6 @@ export const PanelItem: React.FC<PanelItemProps> = ({
             {initialValue}
           </Title>
         )}
-        {/* {(location.pathname === '/confirming-order' ||
-          location.pathname.includes('/confirming-order')) && (
-          <Title level={4} style={{ marginRight: '2rem' }}>
-            {initialValue}
-          </Title>
-        )} */}
       </div>
       <Divider style={{ margin: '0' }} />
     </>
