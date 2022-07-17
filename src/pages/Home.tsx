@@ -7,6 +7,8 @@ import { useGetOrders } from "src/hooks/useGetOrders";
 import UserContext from "src/contexts/UserContext";
 import { getOrderStatus } from "src/utils/getOrderStatus";
 import { useQueryClient } from "react-query";
+import axios from "axios";
+import format from "date-fns/format";
 
 const { Footer, Content } = Layout;
 const { TabPane } = Tabs;
@@ -89,6 +91,17 @@ const Home: React.FC<HomeProps> = ({ userName, userType, barName }) => {
           )}
           {userType === "storage" && <Title level={4}>Storage</Title>}
           {userType === "delivery" && <Title level={4}>Delivery</Title>}
+          <Button
+            size="small"
+            danger
+            onClick={() => {
+              axios.defaults.headers.common["Authorization"] = "";
+              localStorage.clear();
+              window.location.reload();
+            }}
+          >
+            Logout
+          </Button>
         </div>
         <Divider />
         <Tabs defaultActiveKey="1">
@@ -190,6 +203,10 @@ export const OrderCard: React.FC<OrderCardProps> = ({
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
+  const date = format(new Date(orderTime), "dd-LL-Y / H:m");
+
+  console.log("🚀 ~ file: Home.tsx ~ line 208 ~ date", date);
+
   const color = useMemo(() => {
     switch (orderStatus) {
       case "pending":
@@ -215,7 +232,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
       color={color}
     >
       <Card
-        title={`#${orderNo.slice(orderNo.length - 6)} ${orderTime}`}
+        title={`#${orderNo.slice(orderNo.length - 6)} ${date}`}
         size="small"
       >
         <Title level={4}>{barName}</Title>
