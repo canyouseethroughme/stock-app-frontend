@@ -8,10 +8,13 @@ import {
   InputNumber,
 } from "antd";
 import { LeftOutlined, PlusOutlined, MinusOutlined } from "@ant-design/icons";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useStorageProductsByCategory } from "src/hooks/useStorageItems";
 import { PanelItem } from "../components/PanelItem";
+import { useGetOrderById } from "src/hooks/useGetOrderById";
+import TextArea from "antd/lib/input/TextArea";
+import { editOrder } from "../services/orders";
 
 const { Footer, Content } = Layout;
 const { Title } = Typography;
@@ -19,10 +22,11 @@ const { Search } = Input;
 const { Panel } = Collapse;
 
 export interface EditOrderProps {
-  barName: string;
+  barName?: string;
 }
 
 export interface OrderProps {
+  itemId: string;
   quantity: number;
   name: string;
   measurementUnit: string;
@@ -30,14 +34,17 @@ export interface OrderProps {
 
 const EditOrder: React.FC<EditOrderProps> = ({ barName }) => {
   const navigate = useNavigate();
+  let { orderId } = useParams();
+
   const [order, setOrder] = useState<OrderProps[]>([]);
+  const [comment, setComment] = useState<string>();
+
+  const { data: orderData, isLoading } = useGetOrderById({
+    id: orderId as string,
+  });
 
   const { isLoading: isStorageProducstLoadin, data: storageItems } =
     useStorageProductsByCategory({ enabled: true });
-  console.log(
-    "🚀 ~ file: EditOrder.tsx ~ line 36 ~ storageItems",
-    storageItems
-  );
 
   const getPanelValue = (
     reqQuantity: number,
@@ -73,10 +80,11 @@ const EditOrder: React.FC<EditOrderProps> = ({ barName }) => {
   };
 
   useEffect(() => {
-    const orderSession = sessionStorage["order"] ?? null;
-    const parsedOrder: OrderProps[] = JSON.parse(orderSession);
-    parsedOrder !== null && setOrder(parsedOrder);
-  }, []);
+    orderData?.data.order.orderedItems &&
+      setOrder(orderData?.data.order.orderedItems);
+
+    orderData?.data.order.comment && setComment(orderData?.data.order.comment);
+  }, [orderData]);
 
   return (
     <Layout className="layout">
@@ -99,7 +107,7 @@ const EditOrder: React.FC<EditOrderProps> = ({ barName }) => {
         <Divider />
         <Search placeholder="Search for a product" />
 
-        <div style={{ overflowY: "scroll", paddingBottom: "6rem" }}>
+        <div style={{ overflowY: "scroll", paddingBottom: "2rem" }}>
           <Collapse defaultActiveKey={["1"]} style={{ marginTop: "1rem" }}>
             {storageItems?.data.items.map((item, index) => {
               return (
@@ -131,6 +139,19 @@ const EditOrder: React.FC<EditOrderProps> = ({ barName }) => {
             })}
           </Collapse>
         </div>
+        <div style={{ paddingBottom: "7rem" }}>
+          <Title level={5} style={{ margin: "0" }}>
+            Add comment to order
+          </Title>
+          <TextArea
+            value={comment}
+            showCount
+            maxLength={100}
+            rows={4}
+            className="confirmTextarea"
+            onChange={(e) => setComment(e.target.value)}
+          />
+        </div>
       </Content>
 
       <Footer
@@ -159,15 +180,13 @@ const EditOrder: React.FC<EditOrderProps> = ({ barName }) => {
             type="primary"
             block
             disabled={!order.length}
-            onClick={() => {
-              sessionStorage.setItem(
-                "order",
-                JSON.stringify(order.filter((i) => i.quantity !== 0))
-              );
-              navigate("/confirming-order", { replace: true });
+            onClick={async () => {
+              orderId && (await editOrder(orderId, order, comment));
+              console.log(order, orderId, comment);
+              navigate("/");
             }}
           >
-            Next
+            Save changes
           </Button>
         </div>
       </Footer>
