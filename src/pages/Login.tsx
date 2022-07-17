@@ -1,17 +1,17 @@
-import { Button, Input, Layout, Typography } from 'antd';
-import { Content } from 'antd/lib/layout/layout';
-import axios from 'axios';
-import jwtDecode from 'jwt-decode';
+import { Button, Input, Layout, Typography } from "antd";
+import { Content } from "antd/lib/layout/layout";
+import axios from "axios";
+import jwtDecode from "jwt-decode";
 
-import React, { useContext, useEffect, useState } from 'react';
-import UserContext from 'src/contexts/UserContext';
-import { login } from '../services/users';
+import React, { useContext, useEffect, useState } from "react";
+import UserContext from "src/contexts/UserContext";
+import { login } from "../services/users";
 
 const { Title } = Typography;
 
 type TokenType = {
   userId: string;
-  role: 'bar' | 'delivery' | 'storage' | 'admin';
+  role: "bar" | "delivery" | "storage" | "admin";
   username: string;
   barName?: string;
 };
@@ -26,48 +26,48 @@ export const Login: React.FC = () => {
     if (username && password) {
       try {
         const {
-          data: { token }
+          data: { token },
         } = await login({ username, password });
 
         const decodedToken = jwtDecode<TokenType>(token);
-        axios.defaults.headers.common['Authorization'] = token;
+        axios.defaults.headers.common["Authorization"] = token;
         setUserData && setUserData({ ...decodedToken, token });
-        sessionStorage.setItem(
-          'userData',
+        localStorage.setItem(
+          "userData",
           JSON.stringify({ ...decodedToken, token })
         );
       } catch (err) {
-        console.log('err on login => ', err);
+        console.log("err on login => ", err);
       }
     }
   };
 
   return (
-    <Layout className='layout'>
+    <Layout className="layout">
       <Content>
-        <div className='flex-column centerDiv'>
+        <div className="flex-column centerDiv">
           <Title level={5}>WELCOME TO</Title>
-          <Title level={3} style={{ margin: '0 0 2rem 0' }}>
+          <Title level={3} style={{ margin: "0 0 2rem 0" }}>
             KUNE Festival Bar Stock App
           </Title>
 
           <Input
-            placeholder='username'
-            size='large'
-            style={{ marginBottom: '1rem' }}
-            onChange={e => setUsername(e.target.value)}
+            placeholder="username"
+            size="large"
+            style={{ marginBottom: "1rem" }}
+            onChange={(e) => setUsername(e.target.value)}
           />
           <Input
-            placeholder='password'
-            type='password'
-            size='large'
-            style={{ marginBottom: '1rem' }}
-            onChange={e => setPassword(e.target.value)}
+            placeholder="password"
+            type="password"
+            size="large"
+            style={{ marginBottom: "1rem" }}
+            onChange={(e) => setPassword(e.target.value)}
           />
 
           <Button
-            size='large'
-            type='primary'
+            size="large"
+            type="primary"
             block
             disabled={!username || !password}
             onClick={onLogin}
