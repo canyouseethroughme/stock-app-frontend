@@ -111,3 +111,18 @@ export const confirmCompleteOrderDelivery = async (
 
   return data;
 };
+
+export const deleteOrder = async (orderId: string) => {
+  const data = await axios.delete(`${API_URL}/orders/${orderId}`)
+
+  return data
+}
+
+// Alin DK, [17 Jul 2022 at 16.31.50]:
+// /orders/edit-order
+
+// put
+
+// body => orderedItems, comment, orderId
+
+// export const editOrder = asunc ()
