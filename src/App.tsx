@@ -13,6 +13,7 @@ import { ConfirmPickedOrder } from "./pages/ConfirmPickedOrder";
 import { ConfirmDelivered } from "./pages/ConfirmDelivered";
 import { ViewOrder } from "./pages/ViewOrder";
 import EditOrder from "./pages/EditOrder";
+import axios from "axios";
 
 const App: React.FC = () => {
   const [userData, setUserData] = useState<UserType>();
@@ -26,15 +27,14 @@ const App: React.FC = () => {
     }
   }, [userData]);
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     const sessionData = sessionStorage.getItem('userData');
-
-  //     if (sessionData) {
-  //       setUserData(JSON.parse(sessionData));
-  //     }
-  //   }, 400);
-  // }, []);
+  useEffect(() => {
+    const sessionData = localStorage.getItem("userData");
+    if (sessionData) {
+      const parsedData = JSON.parse(sessionData);
+      setUserData(parsedData);
+      axios.defaults.headers.common["Authorization"] = parsedData.token;
+    }
+  }, []);
 
   return (
     <div className="App">
