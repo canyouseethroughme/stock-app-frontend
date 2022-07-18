@@ -9,6 +9,7 @@ import { getOrderStatus } from 'src/utils/getOrderStatus';
 import { useQueryClient } from 'react-query';
 import axios from 'axios';
 import format from 'date-fns/format';
+import { ManageStockTab } from '../components/ManageStockTab';
 
 const { Footer, Content } = Layout;
 const { TabPane } = Tabs;
@@ -144,6 +145,11 @@ const Home: React.FC<HomeProps> = ({ userName, userType, barName }) => {
               <Title className='centeredText'>No orders yet</Title>
             )}
           </TabPane>
+          {userData?.role === 'admin' && (
+            <TabPane tab='MANAGE STOCK' key='3'>
+              <ManageStockTab />
+            </TabPane>
+          )}
         </Tabs>
       </Content>
       <Footer
