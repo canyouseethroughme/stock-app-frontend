@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useGetOrderById } from 'src/hooks/useGetOrderById';
 import { CreateOrderType } from './ConfirmingOrder';
+import { LeftOutlined } from '@ant-design/icons';
 
 const { Title, Paragraph } = Typography;
 
@@ -40,6 +41,13 @@ export const ViewOrder: React.FC<ViewOrderProps> = ({}) => {
       <Content>
         <div className='flex-column' style={{ paddingBottom: '7rem' }}>
           <div className='flex-row'>
+            <Button
+              type='text'
+              size='large'
+              onClick={() => navigate('/', { replace: true })}
+            >
+              <LeftOutlined />
+            </Button>
             <Title level={4} style={{ margin: '0' }}>
               Order summary
             </Title>

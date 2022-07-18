@@ -6,6 +6,7 @@ import { confirmPickedUp } from '../services/orders';
 import { useGetOrderById } from 'src/hooks/useGetOrderById';
 import { CreateOrderType } from './ConfirmingOrder';
 import { PanelItem } from '../components/PanelItem';
+import { LeftOutlined } from '@ant-design/icons';
 
 interface ConfirmPickedOrderProps {}
 
@@ -84,6 +85,13 @@ export const ConfirmPickedOrder: React.FC<ConfirmPickedOrderProps> = ({}) => {
       <Content>
         <div className='flex-column' style={{ paddingBottom: '7rem' }}>
           <div className='flex-row'>
+            <Button
+              type='text'
+              size='large'
+              onClick={() => navigate('/', { replace: true })}
+            >
+              <LeftOutlined />
+            </Button>
             <Title level={4} style={{ margin: '0' }}>
               Order summary
             </Title>

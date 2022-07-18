@@ -51,6 +51,13 @@ export const ConfirmOrderStorage: React.FC<ConfirmOrderStorageProps> = ({}) => {
       <Content>
         <div className='flex-column' style={{ paddingBottom: '7rem' }}>
           <div className='flex-row'>
+            <Button
+              type='text'
+              size='large'
+              onClick={() => navigate('/', { replace: true })}
+            >
+              <LeftOutlined />
+            </Button>
             <Title level={4} style={{ margin: '0' }}>
               Order summary
             </Title>
