@@ -1,17 +1,17 @@
-import { Button, Layout, Spin, Typography } from "antd";
-import { Content, Footer } from "antd/lib/layout/layout";
-import React, { useContext, useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Button, Layout, Spin, Typography } from 'antd';
+import { Content, Footer } from 'antd/lib/layout/layout';
+import React, { useContext, useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   confirmCompleteOrderBar,
-  confirmCompleteOrderDelivery,
-} from "../services/orders";
-import UserContext from "src/contexts/UserContext";
-import { useGetOrderById } from "src/hooks/useGetOrderById";
-import { CreateOrderType } from "./ConfirmingOrder";
-import { PanelItem } from "../components/PanelItem";
+  confirmCompleteOrderDelivery
+} from '../services/orders';
+import UserContext from 'src/contexts/UserContext';
+import { useGetOrderById } from 'src/hooks/useGetOrderById';
+import { CreateOrderType } from './ConfirmingOrder';
+import { PanelItem } from '../components/PanelItem';
 
-const { Title } = Typography;
+const { Title, Paragraph } = Typography;
 
 export const ConfirmDelivered: React.FC = ({}) => {
   const navigate = useNavigate();
@@ -22,7 +22,7 @@ export const ConfirmDelivered: React.FC = ({}) => {
   const [confirmingOrder, setConfirmingOrder] = useState<CreateOrderType[]>([]);
 
   const { data: orderData, isLoading } = useGetOrderById({
-    id: orderId as string,
+    id: orderId as string
   });
 
   useEffect(() => {
@@ -30,12 +30,12 @@ export const ConfirmDelivered: React.FC = ({}) => {
     if (orderData?.data?.order?.confirmOrderPickedUp) {
       setConfirmingOrder(orderData?.data?.order?.confirmOrderPickedUp);
     }
-    orderData?.data?.order?.orderedItems.map((el) => console.log(el));
+    orderData?.data?.order?.orderedItems.map(el => console.log(el));
   }, [orderData]);
 
   const getFirstInitialValue = (id: string): number | undefined => {
     const orderValue = orderData?.data.order.orderedItems.find(
-      (i) => i.itemId === id
+      i => i.itemId === id
     );
     return orderValue?.quantity;
   };
@@ -46,21 +46,21 @@ export const ConfirmDelivered: React.FC = ({}) => {
     measurementUnit: string,
     itemId: string
   ) => {
-    const itemIndex = confirmingOrder.findIndex((o) => o.name === brandName);
+    const itemIndex = confirmingOrder.findIndex(o => o.name === brandName);
     if (itemIndex >= 0) {
-      setConfirmingOrder((prevState) => {
+      setConfirmingOrder(prevState => {
         const newList = [...prevState];
         newList[itemIndex] = {
           ...newList[itemIndex],
           quantity: reqQuantity,
-          measurementUnit,
+          measurementUnit
         };
         return newList;
       });
     } else {
-      setConfirmingOrder((prevState) => [
+      setConfirmingOrder(prevState => [
         ...prevState,
-        { quantity: reqQuantity, name: brandName, measurementUnit, itemId },
+        { quantity: reqQuantity, name: brandName, measurementUnit, itemId }
       ]);
     }
   };
@@ -68,45 +68,42 @@ export const ConfirmDelivered: React.FC = ({}) => {
   const onConfirmOrder = async () => {
     try {
       let data;
-      if (userData?.role === "bar") {
+      if (userData?.role === 'bar') {
         data = await confirmCompleteOrderBar(
           orderId as string,
           confirmingOrder
         );
-      } else if (userData?.role === "delivery") {
+      } else if (userData?.role === 'delivery') {
         data = await confirmCompleteOrderDelivery(
           orderId as string,
           confirmingOrder
         );
       }
-      console.log(
-        "🚀 ~ file: ConfirmOrderStorage.tsx ~ line 39 ~ onConfirmOrder ~ data",
-        data
-      );
-      navigate("/");
+
+      navigate('/');
     } catch (err) {
-      console.log("err confirm order storage => ", err);
+      console.log('err confirm order storage => ', err);
     }
   };
 
   if (isLoading) {
     return (
-      <div className="centerDiv">
-        <Spin size="large" />
+      <div className='centerDiv'>
+        <Spin size='large' />
       </div>
     );
   }
 
   return (
-    <Layout className="layout">
+    <Layout className='layout'>
       <Content>
-        <div className="flex-column" style={{ paddingBottom: "7rem" }}>
-          <div className="flex-row">
-            <Title level={4} style={{ margin: "0" }}>
+        <div className='flex-column' style={{ paddingBottom: '7rem' }}>
+          <div className='flex-row'>
+            <Title level={4} style={{ margin: '0' }}>
               Order summary
             </Title>
           </div>
-          <div style={{ marginTop: "1rem" }}>
+          <div style={{ marginTop: '1rem' }}>
             {confirmingOrder?.map((item, index) => (
               <PanelItem
                 key={index + 1}
@@ -117,7 +114,7 @@ export const ConfirmDelivered: React.FC = ({}) => {
                 measurementUnit={item.measurementUnit}
                 quantity={0}
                 enableEdit={true}
-                getValue={(reqQuantity) =>
+                getValue={reqQuantity =>
                   getPanelValue(
                     reqQuantity,
                     item.name,
@@ -128,13 +125,19 @@ export const ConfirmDelivered: React.FC = ({}) => {
               />
             ))}
           </div>
+          {orderData?.data?.order?.comment && (
+            <div style={{ marginTop: '1rem' }}>
+              <Title level={4}>Comments:</Title>
+              <Paragraph>{orderData?.data?.order?.comment}</Paragraph>
+            </div>
+          )}
         </div>
 
         <Footer>
           <Button
-            size="large"
+            size='large'
             block
-            type="primary"
+            type='primary'
             onClick={onConfirmOrder}
             disabled={!confirmingOrder}
           >

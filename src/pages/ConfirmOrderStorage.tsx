@@ -10,7 +10,7 @@ import { PanelItem } from '../components/PanelItem';
 
 interface ConfirmOrderStorageProps {}
 
-const { Title } = Typography;
+const { Title, Paragraph } = Typography;
 
 export const ConfirmOrderStorage: React.FC<ConfirmOrderStorageProps> = ({}) => {
   const navigate = useNavigate();
@@ -31,10 +31,7 @@ export const ConfirmOrderStorage: React.FC<ConfirmOrderStorageProps> = ({}) => {
   const onConfirmOrder = async () => {
     try {
       const data = await confirmOrderStorage(orderId as string);
-      console.log(
-        '🚀 ~ file: ConfirmOrderStorage.tsx ~ line 39 ~ onConfirmOrder ~ data',
-        data
-      );
+
       navigate('/');
     } catch (err) {
       console.log('err confirm order storage => ', err);
@@ -70,6 +67,12 @@ export const ConfirmOrderStorage: React.FC<ConfirmOrderStorageProps> = ({}) => {
               />
             ))}
           </div>
+          {orderData?.data?.order?.comment && (
+            <div style={{ marginTop: '1rem' }}>
+              <Title level={4}>Comments:</Title>
+              <Paragraph>{orderData?.data?.order?.comment}</Paragraph>
+            </div>
+          )}
         </div>
 
         <Footer>
