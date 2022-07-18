@@ -10,6 +10,7 @@ type CreateOrderType = {
 type CreateOrderReturnType = {
   orderedItems: CreateOrderType[];
   comment?: string;
+  barName?: string;
 };
 
 export type GetOrdersReturn = {
@@ -38,11 +39,13 @@ interface IOrderItem {
 
 export const postCreateOrder = async ({
   orderedItems,
-  comment
+  comment,
+  barName
 }: CreateOrderReturnType) => {
   const data = axios.post(`${API_URL}/orders/create-order`, {
     orderedItems,
-    comment
+    comment,
+    barName
   });
   return data;
 };
@@ -113,15 +116,20 @@ export const confirmCompleteOrderDelivery = async (
 };
 
 export const deleteOrder = async (orderId: string) => {
-  const data = await axios.delete(`${API_URL}/orders/${orderId}`)
+  const data = await axios.delete(`${API_URL}/orders/${orderId}`);
 
-  return data
-}
+  return data;
+};
 
-export const editOrder = async (orderId: string,
-  orderedItems: IOrderItem[], comment?: string) => {
-    const data = await axios.put(`${API_URL}/orders/edit-order`, {
-      orderedItems, comment, orderId
-    })
-    return data
-  }
+export const editOrder = async (
+  orderId: string,
+  orderedItems: IOrderItem[],
+  comment?: string
+) => {
+  const data = await axios.put(`${API_URL}/orders/edit-order`, {
+    orderedItems,
+    comment,
+    orderId
+  });
+  return data;
+};

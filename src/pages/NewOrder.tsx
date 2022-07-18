@@ -5,18 +5,21 @@ import {
   Input,
   Button,
   Collapse,
-  InputNumber
+  InputNumber,
+  Select
 } from 'antd';
 import { LeftOutlined, PlusOutlined, MinusOutlined } from '@ant-design/icons';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useStorageProductsByCategory } from 'src/hooks/useStorageItems';
 import { PanelItem } from '../components/PanelItem';
+import UserContext from 'src/contexts/UserContext';
 
 const { Footer, Content } = Layout;
 const { Title } = Typography;
 const { Search } = Input;
 const { Panel } = Collapse;
+const { Option } = Select;
 
 export interface NewOrderProps {
   barName: string;
@@ -31,9 +34,17 @@ export interface OrderProps {
 const NewOrder: React.FC<NewOrderProps> = ({ barName }) => {
   const navigate = useNavigate();
   const [order, setOrder] = useState<OrderProps[]>([]);
+  const [selectedBarName, setSelectedBarName] = useState<
+    'Vessel' | 'Astral' | 'Space' | undefined
+  >(
+    sessionStorage.getItem('barName')
+      ? (sessionStorage.getItem('barName') as 'Vessel' | 'Astral' | 'Space')
+      : undefined
+  );
 
   const { isLoading: isStorageProducstLoadin, data: storageItems } =
     useStorageProductsByCategory({ enabled: true });
+  const { userData } = useContext(UserContext);
   console.log('🚀 ~ file: NewOrder.tsx ~ line 36 ~ storageItems', storageItems);
 
   const getPanelValue = (
@@ -90,10 +101,26 @@ const NewOrder: React.FC<NewOrderProps> = ({ barName }) => {
             <LeftOutlined />
           </Button>
           <Title level={4} style={{ margin: '0' }}>
-            Creating order for: {barName}
+            Creating order for: {barName || selectedBarName}
           </Title>
         </div>
+        {userData?.role === 'admin' && (
+          <>
+            <Divider />
+            <Select
+              placeholder='Select bar'
+              style={{ width: '100%' }}
+              onChange={value => setSelectedBarName(value)}
+              value={selectedBarName}
+            >
+              <Option value='Vessel'>Vessel</Option>
+              <Option value='Astral'>Astral</Option>
+              <Option value='Space'>Space</Option>
+            </Select>
+          </>
+        )}
         <Divider />
+
         <Search placeholder='Search for a product' />
 
         <div style={{ overflowY: 'scroll', paddingBottom: '6rem' }}>
@@ -155,12 +182,17 @@ const NewOrder: React.FC<NewOrderProps> = ({ barName }) => {
             size='large'
             type='primary'
             block
-            disabled={!order.length}
+            disabled={
+              !order.length || (userData?.role === 'admin' && !selectedBarName)
+            }
             onClick={() => {
               sessionStorage.setItem(
                 'order',
                 JSON.stringify(order.filter(i => i.quantity !== 0))
               );
+              userData?.role === 'admin' &&
+                selectedBarName &&
+                sessionStorage.setItem('barName', selectedBarName);
               navigate('/confirming-order', { replace: true });
             }}
           >

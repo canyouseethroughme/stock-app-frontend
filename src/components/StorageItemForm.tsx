@@ -50,10 +50,7 @@ export const StorageItemForm: React.FC<StorageItemFormProps> = ({
             category
           }
         });
-        console.log(
-          '🚀 ~ file: StorageItemForm.tsx ~ line 49 ~ onCreate ~ data',
-          data
-        );
+
         notification.success({
           message: 'Item created successfully',
           placement: 'top'

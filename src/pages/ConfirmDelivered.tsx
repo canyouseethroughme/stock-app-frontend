@@ -78,6 +78,27 @@ export const ConfirmDelivered: React.FC = ({}) => {
           orderId as string,
           confirmingOrder
         );
+      } else if (userData?.role === 'admin') {
+        if (!orderData?.data?.order?.confirmDeliveredOrderBarId) {
+          const dataAdmin1 = await confirmCompleteOrderBar(
+            orderId as string,
+            confirmingOrder
+          );
+          console.log(
+            '🚀 ~ file: ConfirmDelivered.tsx ~ line 87 ~ onConfirmOrder ~ dataAdmin1',
+            dataAdmin1
+          );
+        }
+        if (!orderData?.data?.order?.confirmDeliveredOrderDeliveryId) {
+          const dataAdmin2 = await confirmCompleteOrderDelivery(
+            orderId as string,
+            confirmingOrder
+          );
+          console.log(
+            '🚀 ~ file: ConfirmDelivered.tsx ~ line 94 ~ onConfirmOrder ~ dataAdmin2',
+            dataAdmin2
+          );
+        }
       }
 
       navigate('/');
