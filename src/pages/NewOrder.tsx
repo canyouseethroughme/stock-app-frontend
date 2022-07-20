@@ -21,17 +21,13 @@ const { Search } = Input;
 const { Panel } = Collapse;
 const { Option } = Select;
 
-export interface NewOrderProps {
-  barName: string;
-}
-
 export interface OrderProps {
   quantity: number;
   name: string;
   measurementUnit: string;
 }
 
-const NewOrder: React.FC<NewOrderProps> = ({ barName }) => {
+const NewOrder: React.FC = () => {
   const navigate = useNavigate();
   const [order, setOrder] = useState<OrderProps[]>([]);
   const [selectedBarName, setSelectedBarName] = useState<
@@ -45,7 +41,6 @@ const NewOrder: React.FC<NewOrderProps> = ({ barName }) => {
   const { isLoading: isStorageProducstLoadin, data: storageItems } =
     useStorageProductsByCategory({ enabled: true });
   const { userData } = useContext(UserContext);
-  console.log('🚀 ~ file: NewOrder.tsx ~ line 36 ~ storageItems', storageItems);
 
   const getPanelValue = (
     reqQuantity: number,
@@ -101,7 +96,7 @@ const NewOrder: React.FC<NewOrderProps> = ({ barName }) => {
             <LeftOutlined />
           </Button>
           <Title level={4} style={{ margin: '0' }}>
-            Creating order for: {barName || selectedBarName}
+            Creating order for: {userData?.barName || selectedBarName}
           </Title>
         </div>
         {userData?.role === 'admin' && (

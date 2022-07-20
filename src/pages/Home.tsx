@@ -1,8 +1,8 @@
 import { Layout, Tabs, Typography, Divider, Button, Badge, Card } from 'antd';
 import { CloseOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { useContext, useEffect, useMemo } from 'react';
-import { deleteOrder, getOrders, GetOrdersReturn } from '../services/orders';
+import { useContext, useMemo } from 'react';
+import { deleteOrder, GetOrdersReturn } from '../services/orders';
 import { useGetOrders } from 'src/hooks/useGetOrders';
 import UserContext from 'src/contexts/UserContext';
 import { getOrderStatus } from 'src/utils/getOrderStatus';
@@ -26,8 +26,6 @@ const Home: React.FC<HomeProps> = ({ userName, userType, barName }) => {
   const navigate = useNavigate();
 
   const { isLoading, data: orders } = useGetOrders();
-  console.log('🚀 ~ file: Home.tsx ~ line 29 ~ orders', orders);
-  console.log(orders?.data.orders);
 
   const { userData } = useContext(UserContext);
 
@@ -167,6 +165,11 @@ const Home: React.FC<HomeProps> = ({ userName, userType, barName }) => {
             size='large'
             icon={<PlusOutlined />}
             block
+            disabled={
+              activeOrders &&
+              activeOrders?.length >= 0 &&
+              activeOrders?.some(item => item.createdBy === userData?.userId)
+            }
             onClick={() => {
               navigate('/new-order', { replace: true });
             }}
