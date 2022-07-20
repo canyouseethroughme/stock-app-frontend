@@ -31,10 +31,10 @@ const NewOrder: React.FC = () => {
   const navigate = useNavigate();
   const [order, setOrder] = useState<OrderProps[]>([]);
   const [selectedBarName, setSelectedBarName] = useState<
-    'Vessel' | 'Astral' | 'Space' | undefined
+    'Vessel' | 'Garden' | 'Space' | undefined
   >(
     sessionStorage.getItem('barName')
-      ? (sessionStorage.getItem('barName') as 'Vessel' | 'Astral' | 'Space')
+      ? (sessionStorage.getItem('barName') as 'Vessel' | 'Garden' | 'Space')
       : undefined
   );
 
@@ -109,7 +109,7 @@ const NewOrder: React.FC = () => {
               value={selectedBarName}
             >
               <Option value='Vessel'>Vessel</Option>
-              <Option value='Astral'>Astral</Option>
+              <Option value='Garden'>Garden</Option>
               <Option value='Space'>Space</Option>
             </Select>
           </>
