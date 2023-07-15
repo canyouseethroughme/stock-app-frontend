@@ -49,7 +49,14 @@ export const ManageStockTab: React.FC = ({}) => {
         loading={isStorageProductsLoading}
         dataSource={storageItems?.data?.items}
         renderItem={item => (
-          <List.Item>
+          <List.Item
+            style={{
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderWidth: 1,
+              borderColor: 'black'
+            }}
+          >
             <StorageListItem item={item} />
           </List.Item>
         )}

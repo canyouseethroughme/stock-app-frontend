@@ -94,6 +94,14 @@ export const StorageItemForm: React.FC<StorageItemFormProps> = ({
     }
   };
 
+  const onChangeNumberInput = (newValue: number | null) => {
+    if (newValue) {
+      return setQuantity(newValue);
+    }
+
+    return setQuantity(undefined);
+  };
+
   return (
     <div className='flex-column'>
       {item ? (
@@ -111,7 +119,7 @@ export const StorageItemForm: React.FC<StorageItemFormProps> = ({
       <Text style={{ marginTop: 15, marginBottom: 5 }}>Quantity: </Text>
       <InputNumber
         value={quantity}
-        onChange={e => setQuantity(e)}
+        onChange={onChangeNumberInput}
         placeholder='Quantity'
         style={{ width: '100%' }}
       />
