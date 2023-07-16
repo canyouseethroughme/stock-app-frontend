@@ -12,6 +12,8 @@ export const getMeasurementColor = (measurementUnit: string) => {
       return '#ffd8b1'; // Pale Orange
     case 'Bottle':
       return '#ffffcc'; // Pale Yellow
+    case 'Keg/fustage':
+      return '#A1EED1';
     default:
       return '#e8e8e8'; // Light Gray
   }

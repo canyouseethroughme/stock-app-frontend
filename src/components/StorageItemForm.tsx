@@ -136,6 +136,7 @@ export const StorageItemForm: React.FC<StorageItemFormProps> = ({
         <Option value='Case of 20'>Case of 20</Option>
         <Option value='Case of 18'>Case of 18</Option>
         <Option value='Case'>Case</Option>
+        <Option value='Keg/fustage'>Keg/fustage</Option>
       </Select>
       <Text style={{ marginTop: 15, marginBottom: 5 }}>Category: </Text>
       <Select
