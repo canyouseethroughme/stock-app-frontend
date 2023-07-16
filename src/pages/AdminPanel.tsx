@@ -3,6 +3,7 @@ import { ManageStockTab } from '../components/ManageStockTab';
 import React, { useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import UserContext from 'src/contexts/UserContext';
+import { UsersTab } from '../components/UsersTab';
 
 const { Title } = Typography;
 const { TabPane } = Tabs;
@@ -31,7 +32,10 @@ export const AdminPanel: React.FC = ({}) => {
         <TabPane tab='MANAGE STOCK' key='1'>
           <ManageStockTab />
         </TabPane>
-        <TabPane tab='STATISTICS' key='2' />
+        <TabPane tab='USERS' key='2'>
+          <UsersTab />
+        </TabPane>
+        {/* <TabPane tab='STATISTICS' key='3' /> */}
       </Tabs>
     </Layout>
   );

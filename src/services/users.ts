@@ -17,3 +17,22 @@ export const login = async ({ username, password }: LoginType) => {
   });
   return data;
 };
+
+export type UserType = {
+  username: string;
+  password?: string;
+  role: 'admin' | 'storage' | 'bar' | 'delivery';
+  barName?: string;
+};
+
+export type GetAllUsersResponseType = {
+  users: UserType[];
+};
+
+export const getAllUsers = async (role?: UserType['role']) => {
+  const data = axios.get<GetAllUsersResponseType>(
+    `${API_URL}/users/getUsersByCategory?role=${role}`,
+    {}
+  );
+  return data;
+};
